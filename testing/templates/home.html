@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="m-2 p-3 border border-black text-center">
+        <h1>Plants and stuff!</h1>
+        <h5>It's a work in progress...</h5>
+</div>
+
+<div class="m-2 p-3 border border-black text-center">
+    <h2>This session started at</h2>
+    <h5>{{ data }}</h5>
+</div>
+
+<div class="m-2 p-3 border border-black text-center">
+    <h2>The current seed is</h2>
+    <h5>{{ plant.name }}</h5>
+    <h5>{{ plant.name }} has been planted: {{plant.is_planted}}</h5>
+    <h5>{{ plant.name }} has been watered: {{plant.is_watered}}</h5>
+</div>
+
+<div class="m-2 p-3 border border-black text-center">
+    <h2>Click to plant {{plant.name}}, then refresh the page</h2>
+    <div style="text-align: right;">
+        <form method="post" action="{{ url_for('home') }}">
+            <button type="submit">Plant the {{plant.name}} seed</button>
+            {{plant.plant()}}
+        </form>
+    </div>
+</div>
+
+<div class="m-2 p-3 border border-black text-center">
+    <h2>Click to water {{plant.name}}, then refresh the page</h2>
+    <div style="text-align: right;">
+        <form method="post" action="{{ url_for('home') }}">
+            <button type="submit">Water {{plant.name}} </button>
+            {{ plant.water_plant() }}
+            <!-- {{ plant.reset_is_watered() }} -->
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}
