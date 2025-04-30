@@ -89,10 +89,12 @@ class Seed(db.Model):
                 
         return f'{self.name} needs to be watered!'  
 
+    # return True or False whether the plant can be watered again
     def is_waterable_check(self):
         self.reset_is_watered()
         return not self.is_watered
 
+    # get the amount of time left until the next time the plant can be watered
     def time_until_waterable(self):
         if not self.is_watered or not self.time_of_watering:
             return None  # no cooldown needed bc plant is not planted or is already watered
@@ -105,6 +107,7 @@ class Seed(db.Model):
             return None
         return remaining
 
+    # add 20 XP to growth
     def add_xp(self):
         self.growth += 20
         print(f"Plant XP: {self.growth}")
