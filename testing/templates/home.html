@@ -19,7 +19,7 @@
 </div>
 
 <div class="m-1 p-6 border border-black text-center">
-    <h2>So you've been a gardner for:</h2>
+    <h2>So you've been a gardener for:</h2>
     <h3>{{time_update.current_time - start.current_time}}</h3>
 </div>
 
@@ -29,7 +29,6 @@
     <h2>Seed: {{ plant.name }}</h2>
     <h5>Planted: {{plant.is_planted}}</h5>
     <h5>Planted Date: {{plant.time_of_planting}} </h5>
-    <h5></h5>
     <h5>Sufficiently Watered: {{plant.is_watered}}</h5>
     <h5>Last watered: {{plant.time_of_watering}}</h5>
 
@@ -49,7 +48,12 @@
             <button type="submit">Water the {{ plant.name }}</button>
         </form>
     {% endif %}
+    {% if water_message %}
+        <p>{{water_message}}</p>
+    {% endif %}
 </div>
+
+
 
 
 
