@@ -28,6 +28,16 @@ def home():
 
     return render_template("home.html", data = start_of_session, plant = seeds)
 
+# @app.route("/flower1", methods=["GET", "POST"])
+# def flower1():
+#     message = None
+#     image_filename = None  
+
+#     if request.method == 'POST':
+#         message = 'Seed planted!'
+#         image_filename = "seed1.webp"
+
+#     return render_template('flower.html', message=message, image=image_filename)
 
 # For every planted seed in database
 ## check time_diff and apply business rules/logic that would've happened had it been running

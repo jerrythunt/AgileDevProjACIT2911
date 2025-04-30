@@ -8,11 +8,19 @@ class Time(db.Model):
     id = db.mapped_column(db.Integer, primary_key = True)
     current_time = db.mapped_column(db.DateTime, nullable = False, default = None)
 
+# class Image(db.Model):
+#     __tablename__ = "Images"
+
+#     id = db.mapped_column(db.Integer, primary_key = True)
+#     path = db.mapped_column(db.String, nullable = False)
+#     plant = db.mapped_column()
+
 class Seed(db.Model):
-    __tablename__ = "seeds"
+    __tablename__ = "Seeds"
     
     id = db.mapped_column(db.Integer, primary_key = True)
     name = db.mapped_column(db.String, nullable = False)
+    # image_id = db.mapped_column(db.Integer, nullable = False)
     category = db.mapped_column(db.String, nullable = False, default = "flower")
     hp = db.mapped_column(db.Integer, nullable = False, default = 100)
     growth = db.mapped_column(db.Integer, nullable = False, default = 0)
