@@ -21,9 +21,11 @@ def delete_tables():
 #     return sessions_start_time
 
 def generate_seed():
-    daisy = Seed(name = "daisy", category = "flower")
-    db.session.add(daisy)
+    seed = Seed(name = "daisy", category = "flower")
+    db.session.add(seed)
     db.session.commit()
+    print(f'Seed Name: {seed.name}, Watered: {seed.is_watered}, Planted: {seed.is_planted}')
+    return seed    
 
 if __name__ == "__main__":
     with app.app_context():
