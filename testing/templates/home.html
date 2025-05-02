@@ -10,12 +10,12 @@
 
 <div class="m-1 p-6 border border-black text-center">
     <h2>You began your planting lifestyle on:</h2>
-    <h3>{{ start.current_time }}</h3>
+    <h3>{{ start.current_time.strftime("%Y-%m-%d %H:%M:%S") }}</h3>
 </div>
 
 <div class="m-1 p-6 border border-black text-center">
     <h2>The current time is: </h2>
-    <h3>{{time_update.current_time}}</h3>
+    <h3>{{time_update.current_time.strftime("%Y-%m-%d %H:%M:%S")}}</h3>
 </div>
 
 <div class="m-1 p-6 border border-black text-center">
@@ -23,15 +23,19 @@
     <h3>{{time_update.current_time - start.current_time}}</h3>
 </div>
 
+<div class="m-2 p-3 border border-black text-center">
+    <h2>Plant Visual</h2>
+    <img src="{{ url_for('static', filename='plant_stage.png') }}" class="plant-image" alt="Plant Stage">
+</div>
 
 
 <div class="m-2 p-3 border border-black text-center">
     <h2>Seed: {{ plant.name }}</h2>
     <h5>Planted: {{plant.is_planted}}</h5>
-    <h5>Planted Date: {{plant.time_of_planting}} </h5>
+    <h5>Planted Date: {{plant.time_of_planting.strftime("%Y-%m-%d %H:%M:%S")}} </h5>
     <h5></h5>
     <h5>Sufficiently Watered: {{plant.is_watered}}</h5>
-    <h5>Last watered: {{plant.time_of_watering}}</h5>
+    <h5>Last watered: {{plant.time_of_watering.strftime("%Y-%m-%d %H:%M:%S")}}</h5>
 
 </div>
 

@@ -1,0 +1,37 @@
+body {
+    background-color: #f6fef9;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+h1, h2 {
+    color: #2e7d32;
+}
+
+.border {
+    border-radius: 10px;
+    border: 2px solid #a5d6a7;
+    background-color: #e8f5e9;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+button {
+    background-color: #66bb6a;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+button:hover {
+    background-color: #388e3c;
+}
+
+.plant-image {
+    width: 150px;       /* 调整宽度 */
+    height: auto;       
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    margin-top: 10px;
+}
