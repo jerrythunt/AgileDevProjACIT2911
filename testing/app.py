@@ -5,7 +5,7 @@ from sqlalchemy.exc import OperationalError
 from pathlib import Path
 from db import db
 from models import Time, Seed
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta
 import time
 
 """INITIATES  APPLICATION, DO NOT TOUCH"""
@@ -79,26 +79,49 @@ def began_game():
 
     return results
 
-# Home page of app
+
 @app.route("/")
 # When home page is loaded, run these functions
 def home():
-    water_msg = request.args.get("message")
-
     seeds = call_seeds()
     # 'time_update' MUST run before 'start' (check pk's)
     time_update = call_time_update()
     start = began_game()
+    # countdown = 5.00 - (seeds.time_until_waterable()).total_seconds()
+    
+    countdown = seeds.time_until_waterable()
+    # if check == None:
+    #     countdown = "There is no countdown"
+    # elif check != None:
+    #     countdown = check
+    # else:
+    #     pass
+        
     update_time()
 
+
     # use the "home.html" template, store the result of each function to a variable that can be called in the html file. Ex: {{plant.name}}
-    return render_template("home.html", plant = seeds, time_update = time_update, start = start, water_message=water_msg)
+    return render_template("test.html", plant = seeds, time_update = time_update, start = start, countdown = countdown)
+
+# # Home page of app
+# @app.route("/")
+# # When home page is loaded, run these functions
+# def home():
+#     seeds = call_seeds()
+#     # 'time_update' MUST run before 'start' (check pk's)
+#     time_update = call_time_update()
+#     start = began_game()
+#     update_time()
+
+#     # use the "home.html" template, store the result of each function to a variable that can be called in the html file. Ex: {{plant.name}}
+#     return render_template("home.html", plant = seeds, time_update = time_update, start = start)
 
 # Allows user to plant an unplanted seed
 @app.route("/plant/<int:seed_id>", methods=["POST"])
 def plant_seed(seed_id):
     seed = db.get_or_404(Seed, seed_id)
     seed.plant()
+    
     return redirect(url_for("home"))
 
 # Allows user to water a seed if not watered
@@ -116,6 +139,7 @@ def water_seed(seed_id):
 
     
     seed.water_plant()
+    
     return redirect(url_for("home"))
 
 # When app.py is run, it runs in debug mode on localhost:8888 
