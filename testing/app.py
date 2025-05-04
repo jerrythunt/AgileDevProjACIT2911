@@ -82,7 +82,7 @@ def began_game():
 
 @app.route("/")
 # When home page is loaded, run these functions
-def home():
+def test():
     seeds = call_seeds()
     # 'time_update' MUST run before 'start' (check pk's)
     time_update = call_time_update()
@@ -122,7 +122,7 @@ def plant_seed(seed_id):
     seed = db.get_or_404(Seed, seed_id)
     seed.plant()
     
-    return redirect(url_for("home"))
+    return redirect(url_for("test"))
 
 # Allows user to water a seed if not watered
 @app.route("/water/<int:seed_id>", methods=["POST"])
@@ -140,7 +140,9 @@ def water_seed(seed_id):
     
     seed.water_plant()
     
-    return redirect(url_for("home"))
+    return redirect(url_for("test"))
+
+
 
 # When app.py is run, it runs in debug mode on localhost:8888 
 if __name__ == "__main__":
