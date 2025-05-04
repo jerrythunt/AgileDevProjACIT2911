@@ -1,5 +1,7 @@
 from db import db
 from datetime import datetime as dt, timedelta
+from datetime import datetime as dt
+from datetime import timedelta
 import time
 
 # Classes are blueprints to create a real-world object
@@ -66,11 +68,10 @@ class Seed(db.Model):
             return self.time_until_waterable()
         
         self.is_watered = True
-        self.growth = self.growth + 20
+        self.add_xp()
         self.time_of_watering = dt.now()
-        if self.hp > 80:
-            self.hp = 100
-        self.hp = self.hp + 20
+        self.add_hp()
+        self.time_until_waterable()
         db.session.commit()
 
         print(f"{self.name} has been watered. It looks very happy!")
@@ -80,16 +81,46 @@ class Seed(db.Model):
     def reset_is_watered(self):
         self.is_watered = False
         db.session.commit()
-        # while self.is_watered == False
-        ## self.hp - 1 
-        ## time.stop(30)
         return f'{self.name} needs to be watered!'
     
-    def grow_stage(self):
-        # if self.growth >= 40:, display new photo
-            pass
+ # return True or False whether the plant can be watered again
+    def is_waterable_check(self):
+         self.reset_is_watered()
+         return not self.is_watered
+    
+# CALLED IN MAIN FUNCTIONS
 
+    # add 20 XP to plant
+    def add_xp(self):
+        self.xp += 20
+        if self.xp >= 100:
+            self.xp = 0
+        print(f"Plant XP: {self.xp}")
 
+    def add_hp(self):
+        self.hp += 20
+        if self.hp > 100:
+            self.hp = 100
+        print(f"Plant XP: {self.xp}")
+    
+    # get the amount of time left until the next time the plant can be watered
+    def time_until_waterable(self):
+        if not self.is_watered or not self.time_of_watering:
+            print('Plant is not watered, or does not have a time of watering')
+            return None  # no cooldown needed bc plant is not planted or is not watered
+ 
+        cooldown = timedelta(minutes=0.1)
+        print(f'Cooldown Value: {cooldown}')
+        elapsed = dt.now() - self.time_of_watering
+        if elapsed > cooldown:
+            self.reset_is_watered()
+            return None
+        print(type(elapsed))
+        remaining = (cooldown - elapsed).total_seconds()
+        minutes = int(remaining // 60)
+        seconds = int(remaining % 60)
+        
+        return f'{minutes} minutes, {seconds} seconds'
 
 
 
