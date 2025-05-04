@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<div class="container">
+  <div class="top-section">
+    <div class="left-box box">
+        <h5>Planting seeds since: {{ start.current_time.strftime('%B %d, %Y') }}</h5>
+    </div>
+    <div class="top-box box">
+        Insert Graphic Here
+    </div>
+    <div class="right-box box">
+        {% if plant.is_planted == True %}
+            XP = {{ plant.xp }},
+            HP = {{ plant.hp }}
+        {% endif %}
+        {% if plant.is_watered == True %}
+            <h5>{{plant.name}} is watered. It looks so happy!</h5>
+            {% if plant.time_of_watering != None %}
+            <h5>{{plant.name}} was last watered on {{plant.time_of_watering.strftime('%A, %B %d  at %I:%M %p')}}</h5>
+        {% endif %}
+            <h5> {{ countdown }} until you can water again</h5>
+        {% endif %}
+        {%if plant.is_watered != True and plant.is_planted == True %}
+            <h5>{{plant.name}} needs watering!  </h5>
+            <h5>It will lose HP for every 'x amount of time' it hasn't been watered.</h5>
+            {% if plant.time_of_watering != None%}
+                <h5>It was last watered on {{plant.time_of_watering.strftime('%A, %B %d  at %I:%M %p')}}</h5>
+            {% endif %}
+        {% endif %}
+    </div>
+  </div>
+  <div class="bottom-box box">
+    {% if not plant.is_planted %}
+    <form method="post" action="{{ url_for('plant_seed', seed_id=plant.id) }}">
+        <button type="submit" class="water-button">Plant a {{ plant.name }} seed</button>
+        </form>
+    {% endif %}
+
+    {% if plant.is_planted %}
+        <form method="post" action="{{ url_for('water_seed', seed_id=plant.id) }}">
+            <button type="submit" class="water-button">Water the {{ plant.name }}</button>
+        </form>
+    {% endif %}
+  </div>
+</div>
+
+
+
+
+
+
+{% endblock %}
