@@ -1,7 +1,5 @@
 from db import db
 from datetime import datetime as dt, timedelta
-from datetime import datetime as dt
-from datetime import timedelta
 import time
 
 # Classes are blueprints to create a real-world object
@@ -22,16 +20,20 @@ class Time(db.Model):
 # class Image(db.Model):
 #     __tablename__ = "Images"
 
-#     id = db.mapped_column(db.Integer, primary_key = True)
-#     path = db.mapped_column(db.String, nullable = False)
-#     plant = db.mapped_column()
+#     id = db.mapped_column(db.Integer, primary_key=True)
+#     path = db.mapped_column(db.String, nullable=False)
+#     xp_amount = db.mapped_column(db.Integer, nullable=False)
+#     plant_id = db.mapped_column(db.Integer, db.ForeignKey("Seeds.id"), nullable=False)
+#     plant = db.relationship("Seed", back_populates="phase_images", foreign_keys=[plant_id])
 
 class Seed(db.Model):
     __tablename__ = "Seeds"
     
     id = db.mapped_column(db.Integer, primary_key = True)
     name = db.mapped_column(db.String, nullable = False)
-    # image_id = db.mapped_column(db.Integer, nullable = False)
+    # image_id = db.mapped_column(db.Integer, db.ForeignKey("Images.id"), nullable=False)
+    # image = db.relationship("Image", foreign_keys=[image_id])
+    # phase_images = db.relationship("Image", back_populates="plant", foreign_keys=[Image.plant_id])
     category = db.mapped_column(db.String, nullable = False, default = "flower")
     hp = db.mapped_column(db.Integer, nullable = False, default = 100)
     xp = db.mapped_column(db.Integer, nullable = False, default = 0)
@@ -39,7 +41,10 @@ class Seed(db.Model):
     time_of_watering = db.mapped_column(db.DateTime, nullable = True, default = None)
     is_planted = db.mapped_column(db.Boolean, nullable=False, default=False)    
     time_of_planting = db.mapped_column(db.DateTime, nullable = True, default = None)
-    water_interval = db.mapped_column(db.DateTime)
+    water_retention = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=10))
+    buffer_interval = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=5))
+    last_decay_time = db.mapped_column(db.DateTime, nullable=True, default=None)
+
 
     # Declare methods that we can call to update attributes
     # def function(self):
@@ -60,12 +65,18 @@ class Seed(db.Model):
         return self.is_planted
     
     def water_plant(self):
-        if self.is_planted == False:
-            print(f"{self.name} hasn't been planted yet. How could you water it if it isn't planted?")
-            return f"{self.name} hasn't been planted yet. How could you water it if it isn't planted?"
-        if self.is_watered == True:
-            print(f"{self.name} is already watered! You have to wait 5 minutes before watering again")
+        # if self.is_planted == False:
+        #     print(f"{self.name} hasn't been planted yet. How could you water it if it isn't planted?")
+        #     return f"{self.name} hasn't been planted yet. How could you water it if it isn't planted?"
+        if self.is_watered:
             return self.time_until_waterable()
+        
+        if not self.is_waterable_check():
+            time_left_to_water = self.time_until_waterable()
+            seconds = int(time_left_to_water.total_seconds())
+            minutes = seconds // 60
+            seconds = seconds % 60
+            return f"{self.name} is already watered. Wait {minutes} min {seconds} sec."
         
         self.is_watered = True
         self.add_xp()
@@ -74,8 +85,8 @@ class Seed(db.Model):
         self.time_until_waterable()
         db.session.commit()
 
-        print(f"{self.name} has been watered. It looks very happy!")
-        return self.time_until_waterable()
+        return f"{self.name} has been watered. It looks very happy!"
+        # return self.time_until_waterable()
     
     # Reset is_watered status
     def reset_is_watered(self):
@@ -85,8 +96,8 @@ class Seed(db.Model):
     
  # return True or False whether the plant can be watered again
     def is_waterable_check(self):
-         self.reset_is_watered()
-         return not self.is_watered
+        self.reset_is_watered()
+        return not self.is_watered
     
 # CALLED IN MAIN FUNCTIONS
 
@@ -102,6 +113,7 @@ class Seed(db.Model):
         if self.hp > 100:
             self.hp = 100
         print(f"Plant XP: {self.xp}")
+
     
     # get the amount of time left until the next time the plant can be watered
     def time_until_waterable(self):
@@ -121,6 +133,84 @@ class Seed(db.Model):
         seconds = int(remaining % 60)
         
         return f'{minutes} minutes, {seconds} seconds'
+    
+    # def decay_hp(self, current_time=None):
+    #     if current_time is None:
+    #         current_time = dt.now()
+        
+    #     if self.time_of_watering is None:
+    #         return
+        
+    #     if self.last_decay_time is None:
+    #         self.last_decay_time = self.time_of_watering + self.water_retention
+
+    #     decay_time = (current_time - self.time_of_watering) - self.water_retention
+    #     if decay_time.total_seconds() <= 0:
+    #         return
+        
+    #     # time since it was last decayed
+    #     time_since_last_decay = current_time - self.last_decay_time
+    #     # number of intervals it has nto been watered
+    #     num_of_decay_intervals = time_since_last_decay // self.buffer_interval
+
+    #     if num_of_decay_intervals >= 1:
+    #         decay_amount = num_of_decay_intervals * 5
+    #         if self.hp >= decay_amount:
+    #             self.hp -= decay_amount
+    #         else:
+    #             self.hp = 0
+
+    #         # update time of last decay in database
+    #         self.last_decay_time += num_of_decay_intervals * self.buffer_interval
+    #         db.session.commit()
+    
+    def decay_hp(self, current_time=None):
+        if current_time is None:
+            current_time = dt.now()
+
+        if self.time_of_watering is None:
+            return
+
+        # Set last_decay_time the *first* time decay runs
+        if self.last_decay_time is None:
+            self.last_decay_time = self.time_of_watering + self.water_retention
+            db.session.commit()
+            return  # don't decay now — start tracking after retention period
+
+        # If we're still in the retention period, do nothing
+        if current_time < self.last_decay_time:
+            return
+
+        # Calculate how many intervals have passed since last decay
+        time_since_last_decay = current_time - self.last_decay_time
+        interval_seconds = self.buffer_interval.total_seconds()
+        intervals = int(time_since_last_decay.total_seconds() // interval_seconds)
+
+        if intervals < 1:
+            return  # not enough time passed yet for next decay
+
+        # Decay once per interval
+        decay_amount = intervals * 5
+        self.hp = max(self.hp - decay_amount, 0)
+
+        # Move forward the last_decay_time
+        self.last_decay_time += timedelta(seconds=intervals * interval_seconds)
+
+        db.session.commit()
+
+
+
+
+    # def grab_image(self):
+    #     images = db.session.execute(db.select(Image).where(Image.plant_id == self.id).order_by(Image.xp_amount)).scalars()
+
+    #     for img in reversed(images):  
+    #         if self.xp >= img.xp_amount:
+    #             self.image_id = img.id
+    #             db.session.commit()
+    #             break
+
+
 
 
 

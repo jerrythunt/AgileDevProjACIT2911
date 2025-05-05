@@ -27,6 +27,8 @@ def call_seeds():
     records = db.session.execute(statement)
     results = records.scalar()
 
+    results.decay_hp()
+
     return results
 
 # Calls current time from db 
@@ -98,7 +100,7 @@ def test():
     #     pass
         
     update_time()
-
+    
 
     # use the "home.html" template, store the result of each function to a variable that can be called in the html file. Ex: {{plant.name}}
     return render_template("test.html", plant = seeds, time_update = time_update, start = start, countdown = countdown)
@@ -128,19 +130,10 @@ def plant_seed(seed_id):
 @app.route("/water/<int:seed_id>", methods=["POST"])
 def water_seed(seed_id):
     seed = db.get_or_404(Seed, seed_id)
+    msg = seed.water_plant()
 
-    if not seed.is_waterable_check():
-        time_left_to_water = seed.time_until_waterable()
-        seconds = int(time_left_to_water.total_seconds())
-        minutes = seconds // 60
-        seconds = seconds % 60
-        msg = f"{seed.name} is already watered. Wait {minutes} min {seconds} sec."
-        return redirect(url_for("home", message=msg))
+    return redirect(url_for("test", message=msg))
 
-    
-    seed.water_plant()
-    
-    return redirect(url_for("test"))
 
 
 
