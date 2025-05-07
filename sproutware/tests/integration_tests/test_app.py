@@ -1,5 +1,5 @@
 import pytest
-from app import app, db, call_time_update, began_game
+from sproutware.app import app, db, call_time_update, began_game
 from models import Time, Seed
 
 @pytest.fixture
