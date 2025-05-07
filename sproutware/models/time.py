@@ -1,6 +1,5 @@
-from db import db
+from sproutware.db import db
 from datetime import datetime as dt
-from .seed import seed
 
 
 # Classes are blueprints to create a real-world object
