@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form method="POST">
+    <button type="submit">Plant Seed</button>
+</form>
+
+{% if image is not none %}
+    <img src="{{ url_for('static', filename='images/' + image) }}" alt="Image failed to load">
+{% endif %}
+
+{% if message %}
+    <p>{{ message }}</p>
+{% endif %}
+
+{% endblock %}
