@@ -8,7 +8,21 @@
         <h5>Planting seeds since: {{ start.current_time.strftime('%B %d, %Y') }}</h5>
     </div>
     <div class="top-box box">
-        Insert Graphic Here
+        <div class="top-box img">
+        {%if plant.is_planted == True %}
+            {%if plant.xp >= 0 and plant.xp < 50 %}
+                <img src="{{ url_for('static', filename='images/sf_seed.png') }}" alt="Plant Stage 1">
+            {% endif %}
+        
+            {%if plant.xp >= 50 and plant.xp < 99 %}
+                <img src="{{ url_for('static', filename='images/sf_sapling.png') }}" alt="Plant Stage 2">
+            {% endif %}
+
+            {%if plant.xp == 100 %}
+                <img src="{{ url_for('static', filename='images/sf_mature.png') }}" alt="Plant Stage 3">
+            {% endif %}
+        {% endif %}
+        </div>
     </div>
     <div class="right-box box">
         {% if plant.is_planted == True %}
