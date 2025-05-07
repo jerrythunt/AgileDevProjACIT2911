@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- <meta http-equiv="refresh" content="1"> -->
+  <meta charset="UTF-8">
+  <title> 🌿Sproutware🌿</title>
+  <style>
+
+  body {
+    background-color: #a8d5ba; 
+    margin: 0;
+    padding: 0;
+  }
+ 
+    .left-box, .right-box, .top-box, .bottom-box {
+    margin: 5px;
+    }
+    
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .top-section {
+      display: flex;
+      flex: 2;
+    }
+
+    .left-box,
+    .right-box {
+      width: 15%;
+      background: #0a25137e;
+      font-size: min(4vw, 1.5em);
+    }
+
+    .top-box {
+      flex: 1;
+      background: #013b0a5d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bottom-box {
+      flex: 0.5;
+      background: #26470898;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+    }
+
+    .box {
+      color: white;
+      font-size: 1.5rem;
+      padding: 0.5rem;
+      border-radius: 30px;
+      text-align: center; 
+      flex-direction: column;           /* Stack elements vertically */
+      align-items: center;              /* Center horizontally */
+
+    }
+
+    .water-button {
+  font-size: 1.2rem;       /* bigger text */
+  padding: 20px 30px;      /* more space inside */
+  border-radius: 8px;      /* optional: rounded corners */
+  background-color: #34533486;
+  color: rgb(255, 255, 255);
+  border:2px solid rgb(78, 167, 86)
+}
+
+  </style>
+</head>
+<body>
+  {% block content %}{% endblock %}
+</body>
+</html>
