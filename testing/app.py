@@ -6,7 +6,11 @@ from models import Time, Seed
 from datetime import datetime as dt
 import time
 
+
+
 app = Flask(__name__)
+
+
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///Growing_Plants.db"
 app.instance_path = Path(".").resolve()
@@ -44,7 +48,7 @@ def update_time():
     current_time_row.current_time = dt.now()
     db.session.commit()
 
-    return current_time_row
+    return current_time_row.current_time.strftime("%Y-%m-%d %H:%M:%S")
 
 # Tell user when they first started playing
 def began_game():  
