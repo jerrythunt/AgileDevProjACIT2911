@@ -1,6 +1,7 @@
 import pytest
 from sproutware.app import app, db, call_time_update, began_game
-from models import Time, Seed
+from models.seed import Seed
+from models.time import Time
 
 @pytest.fixture
 def client():
@@ -42,3 +43,17 @@ def test_plant_and_water_routes(client):
         # 测试 /water 路由
         response_water = client.post(f'/water/{test_seed.id}')
         assert response_water.status_code == 302
+
+
+
+    def test_time_initialization(client):
+        with app.app_context():
+            result = call_time_update()
+            assert isinstance(result, Time)
+            assert result.name == "up_to_date"
+
+    def test_game_start_initialization(client):
+        with app.app_context():
+            result = began_game()
+            assert isinstance(result, Time)
+            assert result.name == "first_launch_date"
