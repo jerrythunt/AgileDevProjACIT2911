@@ -105,7 +105,7 @@ class Seed(db.Model):
     def add_xp(self):
         self.xp += 20
         if self.xp >= 100:
-            self.xp = 0
+            self.xp = 100
         print(f"Plant XP: {self.xp}")
 
     def add_hp(self):

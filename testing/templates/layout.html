@@ -7,12 +7,12 @@
   <style>
 
   body {
-    background-color: #a8d5ba; 
+    background-color: #a5d1b6; 
     margin: 0;
     padding: 0;
   }
  
-    .left-box, .right-box, .top-box, .bottom-box {
+    .left-box, .right-box, .top-box, .bottom-box, .top-box img {
     margin: 5px;
     }
     
@@ -39,9 +39,21 @@
       font-size: min(4vw, 1.5em);
     }
 
+    .top-box img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    background-color: rgba(206, 139, 57, 0)
+  }
+
     .top-box {
       flex: 1;
-      background: #013b0a5d;
+      opacity: 0dsss;
+      background-color: rgba(140, 210, 149, 0.43);
+      /* background: #443e1970; */
       display: flex;
       align-items: center;
       justify-content: center;
