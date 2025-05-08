@@ -27,6 +27,13 @@ def call_seeds():
     records = db.session.execute(statement)
     results = records.scalar()
 
+# Added this to initialize a test seed in db for tests
+    if not results:
+        seed = Seed(name="TestPlant")
+        db.session.add(seed)
+        db.session.commit()
+        results=seed
+
     results.decay_hp()
 
     return results
