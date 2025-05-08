@@ -7,7 +7,7 @@ from sproutware.models.time import Time
 def test_home_page(client):
     response = client.get('/')
     assert response.status_code == 200
-    assert b"So you've been a gardner for" in response.data
+    assert b"Planting seeds since:" in response.data
 
 def test_plant_and_water_routes(client):
     with app.app_context():
