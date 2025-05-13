@@ -39,7 +39,7 @@
                 <p>Decaying seed</p>
             {% endif %}
 
-            {% if plant.xp >= 50 and plant.hp >= 50 %}
+            {% if plant.xp >= 50 and plant.xp < 100 and plant.hp >= 50 %}
                 <img src="{{ url_for('static', filename='images/sf_sapling.png') }}" alt="Plant Stage 2 Healthy">
             {% endif %} 
             {% if plant.xp > 50 and plant.xp < 100 and plant.hp < 50 %}
