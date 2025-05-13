@@ -24,12 +24,12 @@ def generate_seed():
     db.session.add(seed)
     # Commit the new object to the database
     db.session.commit()
-    # Log the objects attribute for debugging purposes
+    # Print the objects attributes for debugging purposes
     print(f'Seed Name: {seed.name}, Watered: {seed.is_watered}, Planted: {seed.is_planted}')
     # Return the newly created object
     return seed    
 
-# if you run "manage.py"
+# if you run "manage.py"/ "python -m sproutware.manage"
 if __name__ == "__main__":
     # given the context of app 
     with app.app_context():

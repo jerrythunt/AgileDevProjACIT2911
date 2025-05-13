@@ -32,13 +32,26 @@
     <div class="top-box box plant-background">
       <div class="top-box img">
         {% if plant.is_planted %}
-            {% if plant.xp < 50 %}
-                <img src="{{ url_for('static', filename='images/sf_seed.png') }}" alt="Plant Stage 1">
-            {% elif plant.xp < 100 %}
-                <img src="{{ url_for('static', filename='images/sf_sapling.png') }}" alt="Plant Stage 2">
-            {% else %}
-                <img src="{{ url_for('static', filename='images/sf_mature.png') }}" alt="Plant Stage 3">
+            {% if plant.xp < 50 and plant.hp >= 50 %}
+                <img src="{{ url_for('static', filename='images/sf_seed.png') }}" alt="Plant Stage 1 Healthy">
+            {% endif %} 
+            {% if plant.xp < 50 and plant.hp < 50 %}
+                <p>Decaying seed</p>
             {% endif %}
+
+            {% if plant.xp >= 50 and plant.xp < 100 and plant.hp >= 50 %}
+                <img src="{{ url_for('static', filename='images/sf_sapling.png') }}" alt="Plant Stage 2 Healthy">
+            {% endif %} 
+            {% if plant.xp > 50 and plant.xp < 100 and plant.hp < 50 %}
+                <p>Decaying sapling</p>
+            {% endif %}
+
+            {% if plant.xp == 100 and plant.hp >= 50 %}
+                <img src="{{ url_for('static', filename='images/sf_mature.png') }}" alt="Plant Stage 3">
+            {% endif %} 
+            {% if plant.xp == 100 and plant.hp < 50 %}
+                <p>Decaying Mature Plant</p>
+            {% endif %} 
         {% endif %}
       </div>
     </div>
