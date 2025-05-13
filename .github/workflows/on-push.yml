@@ -2,11 +2,10 @@ name: Feature Branch CI + PR
 
 on:
   push:
-    branches:
-      - 'feature-*'
-
+    branches: ["**"]  
 jobs:
   test-and-pr:
+    if: github.ref != 'refs/heads/main' && github.ref != 'refs/heads/devmain'
     runs-on: ubuntu-latest
 
     steps:
@@ -27,6 +26,7 @@ jobs:
         run: pytest
 
       - name: Create Pull Request
+        if: success()  # Only create PR if tests passed
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
