@@ -14,7 +14,7 @@ app = Flask(__name__)
 # name of database
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///Growing_Plants.db"
 # populates database in current folder
-app.instance_path = Path(".").resolve()
+app.instance_path = Path("./sproutware").resolve()
 
 db.init_app(app)
 """DO NOT TOUCH ABOVE HERE ^"""
@@ -88,7 +88,6 @@ def began_game():
 
     return results
 
-
 @app.route("/")
 def home():
     return render_template("home.html")
@@ -96,8 +95,6 @@ def home():
 @app.route("/continue")
 def continue_game():
     return redirect(url_for("inventory"))
-
-
 
 @app.route("/inventory")
 def inventory():
@@ -144,24 +141,10 @@ def sunflower():
     # else:
     #     pass
         
-    update_time()
-    
+    update_time() 
 
     # use the "home.html" template, store the result of each function to a variable that can be called in the html file. Ex: {{plant.name}}
     return render_template("sunflower.html", plant = seeds, time_update = time_update, start = start, countdown = countdown)
-
-# # Home page of app
-# @app.route("/")
-# # When home page is loaded, run these functions
-# def home():
-#     seeds = call_seeds()
-#     # 'time_update' MUST run before 'start' (check pk's)
-#     time_update = call_time_update()
-#     start = began_game()
-#     update_time()
-
-#     # use the "home.html" template, store the result of each function to a variable that can be called in the html file. Ex: {{plant.name}}
-#     return render_template("home.html", plant = seeds, time_update = time_update, start = start)
 
 # Allows user to plant an unplanted seed
 @app.route("/plant/<int:seed_id>", methods=["POST"])
@@ -180,8 +163,6 @@ def water_seed(seed_id):
     return redirect(url_for("sunflower", message=msg))
 
 
-
-
-# When app.py is run, it runs in debug mode on localhost:8888 
+# When "python -m sprouteware.app" is run, it runs in debug mode on localhost:8888 
 if __name__ == "__main__":
     app.run(debug = True, port = 8888)
