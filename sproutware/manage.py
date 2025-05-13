@@ -1,11 +1,10 @@
 """THIS MODULE ALLOWS DATABASE TABLE GENERATION"""
 
-from db import db
+from sproutware.db import db
 from datetime import datetime as dt
-from app import app
-from models import Time, Seed
-import time
-from sqlalchemy.exc import OperationalError
+from sproutware.app import app
+from sproutware.models.seed import Seed
+from sproutware.models.time import Time
 
 # creates empty tables db
 def create_tables():
@@ -20,7 +19,7 @@ def delete_tables():
 # Create a 'seed' object
 def generate_seed():
     # Call Seed class, and input necessary attributes
-    seed = Seed(name = "daisy", category = "flower")
+    seed = Seed(name = "sunflower", category = "flower")
     # Add the new object to the current session
     db.session.add(seed)
     # Commit the new object to the database

@@ -1,30 +1,6 @@
-from db import db
+from sproutware.db import db
 from datetime import datetime as dt, timedelta
-import time
-
-# Classes are blueprints to create a real-world object
-# Objects have attributes that define what they ARE (variable)
-# Objects have methods that define what they DO (functions) 
-
-# Create a table, inherit 'db.Model', otherwise it wont add to database!!
-class Time(db.Model):
-    # Declare the tablename
-    __tablename__ = "Time"
-
-    # Declare attributes that will populate database 
-    # attribute = (db.mapped_column(db.DataType, options = insert_option))
-    id = db.mapped_column(db.Integer, primary_key = True)
-    name = db.mapped_column(db.String, nullable = False)
-    current_time = db.mapped_column(db.DateTime, nullable = False, default = dt.now())
-
-# class Image(db.Model):
-#     __tablename__ = "Images"
-
-#     id = db.mapped_column(db.Integer, primary_key=True)
-#     path = db.mapped_column(db.String, nullable=False)
-#     xp_amount = db.mapped_column(db.Integer, nullable=False)
-#     plant_id = db.mapped_column(db.Integer, db.ForeignKey("Seeds.id"), nullable=False)
-#     plant = db.relationship("Seed", back_populates="phase_images", foreign_keys=[plant_id])
+from .time import Time
 
 class Seed(db.Model):
     __tablename__ = "Seeds"
@@ -44,6 +20,7 @@ class Seed(db.Model):
     water_retention = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=10))
     buffer_interval = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=5))
     last_decay_time = db.mapped_column(db.DateTime, nullable=True, default=None)
+    is_selected = db.mapped_column(db.Boolean, nullable=False, default=False)
 
 
     # Declare methods that we can call to update attributes
@@ -209,11 +186,3 @@ class Seed(db.Model):
     #             self.image_id = img.id
     #             db.session.commit()
     #             break
-
-
-
-
-
-
-
-
