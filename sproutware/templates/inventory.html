@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        background-color: #e8f5e9;
+        font-family: Arial, sans-serif;
+    }
+
+    h1 {
+        text-align: center;
+        margin-top: 30px;
+        color: #2e7d32;
+    }
+
+    .card-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 30px auto;
+        max-width: 1000px;
+    }
+
+    .plant-card {
+        background: #ffffff;
+        border: 2px solid #a5d6a7;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 15px;
+        width: 220px;
+        box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .plant-card h2 {
+        color: #388e3c;
+    }
+
+    .plant-card p {
+        margin: 8px 0;
+    }
+
+    .select-btn, .goto-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+        margin-top: 10px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .select-btn {
+        background-color: #81c784;
+        color: white;
+    }
+
+    .select-btn:hover {
+        background-color: #66bb6a;
+    }
+
+    .goto-btn {
+        background-color: #4caf50;
+        color: white;
+    }
+
+    .goto-btn:hover {
+        background-color: #388e3c;
+    }
+
+    .selected-tag {
+        font-weight: bold;
+        color: #2e7d32;
+        margin-top: 10px;
+    }
+</style>
+
+<h1>🌿 Your Plant Inventory</h1>
+
+<div class="card-container">
+    {% for seed in seeds %}
+    <div class="plant-card">
+        <h2>{{ seed.name.capitalize() }}</h2>
+        <p>Category: {{ seed.category }}</p>
+        <p>HP: {{ seed.hp }}</p>
+        <p>XP: {{ seed.xp }}</p>
+
+        {% if seed.id == selected_id %}
+            <div class="selected-tag">✅ Selected</div>
+            <form action="{{ url_for('sunflower') }}">
+                <button type="submit" class="goto-btn">Go to {{ seed.name }}</button>
+            </form>
+        {% else %}
+            <form action="{{ url_for('select_seed', seed_id=seed.id) }}" method="post">
+                <button type="submit" class="select-btn">Select</button>
+            </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

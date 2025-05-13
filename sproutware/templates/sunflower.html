@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+  .top-box.plant-background {
+    background-image: url("{{ url_for('static', filename='images/background.png') }}");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+  }
+</style>
+
+<div class="container">
+  <div class="top-section">
+
+    <!-- Left -->
+    <div class="left-box box">
+      {% if start and start.current_time %}
+        <h5>Planting seeds since: {{ start.current_time.strftime('%B %d, %Y') }}</h5>
+      {% else %}
+        <h5>Welcome! Your garden journey is just beginning 🌱</h5>
+      {% endif %}
+      <form action="{{ url_for('inventory') }}">
+        <button type="submit" class="water-button" style="margin-top: 20px;">
+            🌿 Go to Inventory
+        </button>
+      </form>
+    </div>
+
+    <!-- Center with background -->
+    <div class="top-box box plant-background">
+      <div class="top-box img">
+        {% if plant.is_planted %}
+            {% if plant.xp < 50 %}
+                <img src="{{ url_for('static', filename='images/sf_seed.png') }}" alt="Plant Stage 1">
+            {% elif plant.xp < 100 %}
+                <img src="{{ url_for('static', filename='images/sf_sapling.png') }}" alt="Plant Stage 2">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/sf_mature.png') }}" alt="Plant Stage 3">
+            {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div class="right-box box">
+      <p>XP = {{ plant.xp }}, HP = {{ plant.hp }}</p>
+      {% if plant.is_watered %}
+        <h5>{{ plant.name }} is watered. It looks so happy!</h5>
+        {% if plant.time_of_watering %}
+          <h5>{{ plant.name }} was last watered on {{ plant.time_of_watering.strftime('%A, %B %d at %I:%M %p') }}</h5>
+        {% endif %}
+        <h5>{{ countdown }} until you can water again</h5>
+      {% elif plant.is_planted %}
+        <h5>{{ plant.name }} needs watering!</h5>
+        <h5>It will lose HP for every 'x amount of time' it hasn't been watered.</h5>
+        {% if plant.time_of_watering %}
+          <h5>It was last watered on {{ plant.time_of_watering.strftime('%A, %B %d at %I:%M %p') }}</h5>
+        {% endif %}
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- Bottom -->
+  <div class="bottom-box box">
+    {% if not plant.is_planted %}
+      <form method="post" action="{{ url_for('plant_seed', seed_id=plant.id) }}">
+        <button type="submit" class="water-button">Plant a {{ plant.name }} seed</button>
+      </form>
+    {% else %}
+      <form method="post" action="{{ url_for('water_seed', seed_id=plant.id) }}">
+        <button type="submit" class="water-button">Water the {{ plant.name }}</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

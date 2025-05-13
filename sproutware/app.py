@@ -90,8 +90,46 @@ def began_game():
 
 
 @app.route("/")
-# When home page is loaded, run these functions
-def test():
+def home():
+    return render_template("home.html")
+
+@app.route("/continue")
+def continue_game():
+    return redirect(url_for("inventory"))
+
+
+
+@app.route("/inventory")
+def inventory():
+    seeds = db.session.execute(db.select(Seed)).scalars().all()
+
+    selected_seed = db.session.execute(db.select(Seed).where(Seed.is_selected == True)).scalar()
+
+    if selected_seed:
+        selected_id = selected_seed.id
+    else:
+        selected_id = None
+
+    return render_template("inventory.html", seeds=seeds, selected_id=selected_id)
+
+
+@app.route("/select/<int:seed_id>", methods=["POST"])
+def select_seed(seed_id):
+    selected_result = db.session.execute(db.select(Seed).where(Seed.is_selected == True)).scalar()
+
+    if selected_result:
+        selected_result.is_selected = False
+
+    new_selected = db.get_or_404(Seed, seed_id)
+    new_selected.is_selected = True
+
+    db.session.commit()
+    return redirect(url_for("inventory"))
+
+
+
+@app.route("/sunflower")
+def sunflower():
     seeds = call_seeds()
     # 'time_update' MUST run before 'start' (check pk's)
     time_update = call_time_update()
@@ -110,7 +148,7 @@ def test():
     
 
     # use the "home.html" template, store the result of each function to a variable that can be called in the html file. Ex: {{plant.name}}
-    return render_template("test.html", plant = seeds, time_update = time_update, start = start, countdown = countdown)
+    return render_template("sunflower.html", plant = seeds, time_update = time_update, start = start, countdown = countdown)
 
 # # Home page of app
 # @app.route("/")
@@ -131,7 +169,7 @@ def plant_seed(seed_id):
     seed = db.get_or_404(Seed, seed_id)
     seed.plant()
     
-    return redirect(url_for("test"))
+    return redirect(url_for("sunflower"))
 
 # Allows user to water a seed if not watered
 @app.route("/water/<int:seed_id>", methods=["POST"])
@@ -139,7 +177,7 @@ def water_seed(seed_id):
     seed = db.get_or_404(Seed, seed_id)
     msg = seed.water_plant()
 
-    return redirect(url_for("test", message=msg))
+    return redirect(url_for("sunflower", message=msg))
 
 
 

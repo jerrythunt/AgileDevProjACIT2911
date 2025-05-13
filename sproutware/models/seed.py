@@ -20,6 +20,7 @@ class Seed(db.Model):
     water_retention = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=10))
     buffer_interval = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=5))
     last_decay_time = db.mapped_column(db.DateTime, nullable=True, default=None)
+    is_selected = db.mapped_column(db.Boolean, nullable=False, default=False)
 
 
     # Declare methods that we can call to update attributes
