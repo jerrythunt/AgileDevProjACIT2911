@@ -1,0 +1,36 @@
+name: Feature Branch CI + PR
+
+on:
+  push:
+    branches: ["**"]  
+jobs:
+  test-and-pr:
+    if: github.ref != 'refs/heads/main' && github.ref != 'refs/heads/devmain'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run tests
+        run: pytest
+
+      - name: Create Pull Request
+        if: success()  # Only create PR if tests passed
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: ${{ github.ref_name }}
+          title: "Auto PR for ${{ github.ref_name }}"
+          body: "Automated pull request created after passing tests."

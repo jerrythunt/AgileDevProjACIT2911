@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sproutware</title>
+    <style>
+        body {
+            background-color: #cce8cc;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .menu-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        .menu-btn:hover {
+            background-color: #388e3c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Sproutware</h1>
+    <form action="/new" method="post">
+        <button class="menu-btn">New Game</button>
+    </form>
+    <form action="/continue" method="get">
+        <button class="menu-btn">Continue Game</button>
+    </form>
+</body>
+</html>
+
+{% endblock %}
