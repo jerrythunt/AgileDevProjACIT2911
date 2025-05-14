@@ -114,9 +114,7 @@ def continue_game():
 @app.route("/inventory")
 def inventory():
     seeds = db.session.execute(db.select(Seed)).scalars().all()
-
     selected_seed = db.session.execute(db.select(Seed).where(Seed.is_selected == True)).scalar()
-
     if selected_seed:
         selected_id = selected_seed.id
     else:
@@ -147,7 +145,7 @@ def sunflower():
         seed = Seed(name = "Sunflower", category = "flower")
         db.session.add(seed)
         db.session.commit()
-        print('A new sunflower has been generated')
+        print('A new sunflower has been generated!')
         return render_template("dead_plant.html")
     # 'time_update' MUST run before 'start' (check pk's)
     time_update = call_time_update()
