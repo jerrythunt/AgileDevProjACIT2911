@@ -6,7 +6,7 @@ from pathlib import Path
 from sproutware.db import db
 from sproutware.models.seed import Seed
 from sproutware.models.time import Time
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta
 
 """INITIATES  APPLICATION, DO NOT TOUCH"""
 app = Flask(__name__)
@@ -26,6 +26,21 @@ def call_seeds():
     statement = db.select(Seed)
     records = db.session.execute(statement)
     results = records.scalar()
+    return results
+    
+def generate_daisy():
+    daisy = Seed(name = "Daisy", category = "flower", water_retention = timedelta(seconds=5), buffer_interval = timedelta(seconds=5))
+    db.session.add(daisy)
+    db.session.commit()
+    print(f'Seed Name: {daisy.name}, Watered: {daisy.is_watered}, Planted: {daisy.is_planted}')
+    return daisy
+
+def generate_cactus():
+    cactus = Seed(name = "Cactus", category = "flower", water_retention = timedelta(seconds=30), buffer_interval = timedelta(seconds=20))
+    db.session.add(cactus)
+    db.session.commit()
+    print(f'Seed Name: {cactus.name}, Watered: {cactus.is_watered}, Planted: {cactus.is_planted}')
+    return cactus  
 
 # Added this to initialize a test seed in db for tests
     if not results:
@@ -128,18 +143,17 @@ def select_seed(seed_id):
 @app.route("/sunflower")
 def sunflower():
     seeds = call_seeds()
+    if seeds == None:
+        seed = Seed(name = "Sunflower", category = "flower")
+        db.session.add(seed)
+        db.session.commit()
+        print('A new sunflower has been generated')
+        return render_template("dead_plant.html")
     # 'time_update' MUST run before 'start' (check pk's)
     time_update = call_time_update()
     start = began_game()
     # countdown = 5.00 - (seeds.time_until_waterable()).total_seconds()
-    
     countdown = seeds.time_until_waterable()
-    # if check == None:
-    #     countdown = "There is no countdown"
-    # elif check != None:
-    #     countdown = check
-    # else:
-    #     pass
         
     update_time() 
 

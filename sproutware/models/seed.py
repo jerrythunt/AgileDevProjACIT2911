@@ -7,9 +7,6 @@ class Seed(db.Model):
     
     id = db.mapped_column(db.Integer, primary_key = True)
     name = db.mapped_column(db.String, nullable = False)
-    # image_id = db.mapped_column(db.Integer, db.ForeignKey("Images.id"), nullable=False)
-    # image = db.relationship("Image", foreign_keys=[image_id])
-    # phase_images = db.relationship("Image", back_populates="plant", foreign_keys=[Image.plant_id])
     category = db.mapped_column(db.String, nullable = False, default = "flower")
     hp = db.mapped_column(db.Integer, nullable = False, default = 100)
     xp = db.mapped_column(db.Integer, nullable = False, default = 0)
@@ -21,7 +18,6 @@ class Seed(db.Model):
     buffer_interval = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=5))
     last_decay_time = db.mapped_column(db.DateTime, nullable=True, default=None)
     is_selected = db.mapped_column(db.Boolean, nullable=False, default=False)
-
 
     # Declare methods that we can call to update attributes
     # def function(self):
@@ -60,6 +56,7 @@ class Seed(db.Model):
         self.time_of_watering = dt.now()
         self.add_hp()
         self.time_until_waterable()
+        self.decay_hp()
         db.session.commit()
 
         return f"{self.name} has been watered. It looks very happy!"
@@ -91,7 +88,6 @@ class Seed(db.Model):
             self.hp = 100
         print(f"Plant XP: {self.xp}")
 
-    
     # get the amount of time left until the next time the plant can be watered
     def time_until_waterable(self):
         if not self.is_watered or not self.time_of_watering:
@@ -110,36 +106,6 @@ class Seed(db.Model):
         seconds = int(remaining % 60)
         
         return f'{minutes} minutes, {seconds} seconds'
-    
-    # def decay_hp(self, current_time=None):
-    #     if current_time is None:
-    #         current_time = dt.now()
-        
-    #     if self.time_of_watering is None:
-    #         return
-        
-    #     if self.last_decay_time is None:
-    #         self.last_decay_time = self.time_of_watering + self.water_retention
-
-    #     decay_time = (current_time - self.time_of_watering) - self.water_retention
-    #     if decay_time.total_seconds() <= 0:
-    #         return
-        
-    #     # time since it was last decayed
-    #     time_since_last_decay = current_time - self.last_decay_time
-    #     # number of intervals it has nto been watered
-    #     num_of_decay_intervals = time_since_last_decay // self.buffer_interval
-
-    #     if num_of_decay_intervals >= 1:
-    #         decay_amount = num_of_decay_intervals * 5
-    #         if self.hp >= decay_amount:
-    #             self.hp -= decay_amount
-    #         else:
-    #             self.hp = 0
-
-    #         # update time of last decay in database
-    #         self.last_decay_time += num_of_decay_intervals * self.buffer_interval
-    #         db.session.commit()
     
     def decay_hp(self, current_time=None):
         if current_time is None:
@@ -174,15 +140,13 @@ class Seed(db.Model):
         self.last_decay_time += timedelta(seconds=intervals * interval_seconds)
 
         db.session.commit()
+        self.dead_plant()
 
-
-
-
-    # def grab_image(self):
-    #     images = db.session.execute(db.select(Image).where(Image.plant_id == self.id).order_by(Image.xp_amount)).scalars()
-
-    #     for img in reversed(images):  
-    #         if self.xp >= img.xp_amount:
-    #             self.image_id = img.id
-    #             db.session.commit()
-    #             break
+    def dead_plant(self):
+        if self.hp <= 0:
+            seed_to_delete = db.session.execute(db.select(Seed).where(self.id == Seed.id)).scalar()
+            db.session.delete(seed_to_delete)
+            db.session.commit()
+            print(f'{self.name} has reached 0 HP and has died! Poor thing... Don\'t forget to water!')
+        else:
+            pass
