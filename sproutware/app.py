@@ -41,11 +41,11 @@ def call_seeds():
 
 # Calls current time from db 
 def call_time_update():
-    # Query the database for a Time table, and grab the specific entry where the id == 1
+    # select the database for a Time table, and grab the specific entry where the id == 1
     statement = db.select(Time).where(Time.id == 1)
     # Execute the statement
     records = db.session.execute(statement)
-    # Convert the statement/query to an object so we can use it (.scalar()/.scalars()) 
+    # Convert the statement/select to an object so we can use it (.scalar()/.scalars()) 
     results = records.scalar()
  
     # If it doesn't exist yet (app has been initialized), store current time to database
@@ -62,8 +62,10 @@ def call_time_update():
 
 # Update the current time entry in database to right now
 def update_time():
-    # Query the database for a table named Time, and grab the first row
-    current_time_row = db.session.query(Time).first()
+    # select the database for a table named Time, and grab the first row
+    statement = db.select(Time)
+    records = db.session.execute(statement)
+    current_time_row = records.scalars().first()
     # Update the first row to current time 
     current_time_row.current_time = dt.now()
     # Commit the change to the database
@@ -162,6 +164,35 @@ def water_seed(seed_id):
     msg = seed.water_plant()
 
     return redirect(url_for("sunflower", message=msg))
+
+@app.route("/new", methods=["POST"])
+def new_game():
+    try:
+        # Delete all existing Seed entries
+        seeds = db.session.execute(db.select(Seed)).scalars().all()
+        for seed in seeds:
+            db.session.delete(seed)
+        # Delete all existing Time entries
+        times = db.session.execute(db.select(Time)).scalars().all()
+        for time in times:
+            db.session.delete(time)
+        db.session.commit()
+        # Create initial seed
+        seed = Seed(name="sunflower", category="flower")
+        db.session.add(seed)
+        
+        # Create time entries
+        current_time = Time(name="up_to_date")
+        first_launch = Time(name="first_launch_date")
+        db.session.add(current_time)
+        db.session.add(first_launch)
+        
+        db.session.commit()
+        return redirect(url_for("inventory"))
+    except Exception as e:
+        print(f"Error creating new game: {e}")
+        db.session.rollback()
+        return redirect(url_for("home"))
 
 
 # When "python -m sprouteware.app" is run, it runs in debug mode on localhost:8888 
