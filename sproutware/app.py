@@ -103,16 +103,11 @@ def continue_game():
 def inventory():
     seeds = db.session.execute(db.select(Seed)).scalars().all()
     selected_seed = db.session.execute(db.select(Seed).where(Seed.is_selected == True)).scalar()
-<<<<<<< HEAD
-
-    selected_id = selected_seed.id if selected_seed else None
-=======
     if selected_seed:
         selected_id = selected_seed.id
     else:
         selected_id = None
 
->>>>>>> jerry
     return render_template("inventory.html", seeds=seeds, selected_id=selected_id)
 
 @app.route("/select/<int:seed_id>", methods=["POST"])
@@ -133,12 +128,6 @@ def plant_page(plant_name):
     if not seed:
         return f"Plant '{plant_name}' not found.", 404
 
-<<<<<<< HEAD
-    time_update = call_time_update()
-    start = began_game()
-    countdown = seed.time_until_waterable()
-    update_time()
-=======
 
 @app.route("/sunflower")
 def sunflower():
@@ -156,7 +145,6 @@ def sunflower():
     countdown = seeds.time_until_waterable()
         
     update_time() 
->>>>>>> jerry
 
     return render_template("sunflower.html", plant=seed, time_update=time_update, start=start, countdown=countdown)
 
