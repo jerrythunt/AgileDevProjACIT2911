@@ -32,6 +32,7 @@
     <div class="top-box box plant-background">
       <div class="top-box img">
         {% if plant.is_planted %}
+        <!-- Seed Display Logic -->
             {% if plant.xp < 50 and plant.hp >= 50 %}
                 <img src="{{ url_for('static', filename='images/sf_seed.png') }}" alt="Plant Stage 1 Healthy">
             {% endif %} 
@@ -39,18 +40,20 @@
                 <p>Decaying seed</p>
             {% endif %}
 
+        <!-- Sapling Display Logic -->
             {% if plant.xp >= 50 and plant.xp < 100 and plant.hp >= 50 %}
                 <img src="{{ url_for('static', filename='images/sf_sapling.png') }}" alt="Plant Stage 2 Healthy">
             {% endif %} 
             {% if plant.xp > 50 and plant.xp < 100 and plant.hp < 50 %}
                 <p>Decaying sapling</p>
             {% endif %}
-
+            
+        <!-- Mature Plant Display Logic -->
             {% if plant.xp == 100 and plant.hp >= 50 %}
                 <img src="{{ url_for('static', filename='images/sf_mature.png') }}" alt="Plant Stage 3">
             {% endif %} 
             {% if plant.xp == 100 and plant.hp < 50 %}
-                <p>Decaying Mature Plant</p>
+                <img src="{{ url_for('static', filename='images/sf_mature_wilt.png') }}" alt="Plant Stage 3 Wilting">
             {% endif %} 
         {% endif %}
       </div>
@@ -67,7 +70,7 @@
         <h5>{{ countdown }} until you can water again</h5>
       {% elif plant.is_planted %}
         <h5>{{ plant.name }} needs watering!</h5>
-        <h5>It will lose HP for every 'x amount of time' it hasn't been watered.</h5>
+        <h5>It will lose {{plant.decay_amount}} HP for every {{ plant.decay_interval.total_seconds()|int }} seconds it hasn't been watered.</h5>
         {% if plant.time_of_watering %}
           <h5>It was last watered on {{ plant.time_of_watering.strftime('%A, %B %d at %I:%M %p') }}</h5>
         {% endif %}

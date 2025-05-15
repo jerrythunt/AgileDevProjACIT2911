@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<p>Your plant is dead 😒</p>
+<p>A new seed has been given to you in your inventory. Make sure to take care of this one!</p>
+<div>
+    <img src="{{ url_for('static', filename='images/dead_plant.png') }}" alt="Dead Plant">
+</div>
+{% endblock %}
