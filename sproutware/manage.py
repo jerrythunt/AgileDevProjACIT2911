@@ -20,11 +20,9 @@ def delete_tables():
 def generate_seed():
     # Call Seed class, and input necessary attributes
     seed = Seed(name = "sunflower", category = "flower")
-    seed2 = Seed(name = "daisy", category = "flower")
 
     # Add the new object to the current session
     db.session.add(seed)
-    db.session.add(seed2)
     # Commit the new object to the database
     db.session.commit()
     # Print the objects attributes for debugging purposes
