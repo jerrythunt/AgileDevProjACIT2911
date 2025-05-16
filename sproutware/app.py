@@ -29,14 +29,14 @@ def call_seeds():
     return results
     
 def generate_daisy():
-    daisy = Seed(name = "Daisy", category = "flower", water_retention = timedelta(seconds=5), buffer_interval = timedelta(seconds=5))
+    daisy = Seed(name = "Daisy", category = "flower", water_retention = timedelta(seconds=5), decay_interval = timedelta(seconds=5))
     db.session.add(daisy)
     db.session.commit()
     print(f'Seed Name: {daisy.name}, Watered: {daisy.is_watered}, Planted: {daisy.is_planted}')
     return daisy
 
 def generate_cactus():
-    cactus = Seed(name = "Cactus", category = "flower", water_retention = timedelta(seconds=30), buffer_interval = timedelta(seconds=20))
+    cactus = Seed(name = "Cactus", category = "flower", water_retention = timedelta(seconds=30), decay_interval = timedelta(seconds=20))
     db.session.add(cactus)
     db.session.commit()
     print(f'Seed Name: {cactus.name}, Watered: {cactus.is_watered}, Planted: {cactus.is_planted}')
@@ -125,23 +125,54 @@ def select_seed(seed_id):
 @app.route("/<plant_name>")
 def plant_page(plant_name):
     seed = db.session.execute(db.select(Seed).where(Seed.name.ilike(plant_name))).scalar()
+    print("Seed was grabbed")
+
+
+    if seed == None:
+        seed = Seed(name = "Sunflower", category = "flower")
+        db.session.add(seed)
+        db.session.commit()
+        print('A new sunflower has been generated!')
+        return render_template("dead_plant.html")
 
     if not seed:
         return f"Plant '{plant_name}' not found.", 404
 
     time_update = call_time_update()
+    print("Time update called")
     start = began_game()
+    print("Start time was called")
     countdown = seed.time_until_waterable()
+    print("Countdown was called")
     update_time()
+    print("update time was called")
+    
+    if seed.name == "sunflower" or seed.name == "Sunflower":
+        if seed.produced_seeds == False:
+            if seed.xp == 100:
+                seed.produced_seeds = True
+                seed.matured_time()
+                generate_daisy()
+                print('Your plant has fully matured! A new Daisy seed has been added to your inventory!')
+
+    if seed.name == "Daisy" or seed.name == "daisy":
+        if seed.produced_seeds == False:
+            if seed.xp == 100:
+                seed.produced_seeds = True
+                seed.matured_time()
+                generate_cactus()
+                print('Your plant has fully matured! A new Cactus seed has been added to your inventory!')
+
 
     try:
         return render_template(
             "plant_page.html",  # ✅ this is your dynamic template
             plant=seed,
-            time_update=time_update,
-            start=start,
-            countdown=countdown
+            time_update = time_update,
+            start = start,
+            countdown = countdown
         )
+    
     except:
         return f"Template '{plant_name}.html' not found.", 404
 

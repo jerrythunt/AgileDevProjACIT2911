@@ -14,10 +14,12 @@ class Seed(db.Model):
     time_of_watering = db.mapped_column(db.DateTime, nullable = True, default = None)
     is_planted = db.mapped_column(db.Boolean, nullable=False, default=False)    
     time_of_planting = db.mapped_column(db.DateTime, nullable = True, default = None)
-    water_retention = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=30)) # change this for different plants
+    water_retention = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=5)) # change this for different plants
     is_selected = db.mapped_column(db.Boolean, nullable=False, default=False)
     decay_amount = db.mapped_column(db.Integer, nullable = False, default = 10) # change this for different plants
-    decay_interval = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=60)) # change this for different plants
+    decay_interval = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=15)) # change this for different plants
+    produced_seeds = db.mapped_column(db.Boolean, nullable = False, default = False)
+    time_of_maturity = db.mapped_column(db.DateTime, nullable = True, default = None)
 
     # Declare methods that we can call to update attributes
     # def function(self):
@@ -75,6 +77,12 @@ class Seed(db.Model):
         self.reset_is_watered()
         return not self.is_watered
     
+    def matured_time(self):
+        if self.xp == 100:
+            self.time_of_maturity = dt.now()
+            return self.time_of_maturity
+
+
 # CALLED IN MAIN FUNCTIONS
 
     # add 20 XP to plant

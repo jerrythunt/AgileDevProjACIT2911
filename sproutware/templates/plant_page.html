@@ -27,6 +27,9 @@
             🌿 Go to Inventory
         </button>
       </form>
+      {% if plant.produced_seeds == True  %}
+        <h5>Congratulations! {{ plant.name }} has fully matured and given you a new seed. Check it out in your inventory!</h5>
+      {% endif %}
     </div>
 
     <!-- Center with background -->
@@ -83,6 +86,9 @@
         <h5>Loses {{ plant.decay_amount }} HP every {{ plant.decay_interval.total_seconds()|int }} seconds if left dry.</h5>
         {% if plant.time_of_watering %}
           <h5>Last watered: {{ plant.time_of_watering.strftime('%A, %B %d at %I:%M %p') }}</h5>
+        {% endif %}
+        {% if plant.time_of_maturity != None %}
+          <h5>{{plant.name}} reached full maturity on {{ plant.time_of_maturity.strftime('%A, %B %d at %I:%M %p') }}</h5>
         {% endif %}
       {% endif %}
     </div>
