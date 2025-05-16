@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+  body {
+    background-image: url("{{ url_for('static', filename='images/main_menu_background.png') }}");
+    background-size: 110%;
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 100vh;
+    margin: 0;
+    font-family: sans-serif;
+  }
+
+  .menu-buttons {
+    position: absolute;
+    top: 55%;
+    right: 15%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .menu-buttons form button {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    padding: 7px;
+    transition: color 0.2s ease;
+    width: 400px;
+    text-align: center;
+  }
+
+  .menu-buttons form button:hover {
+    color: rgb(233, 233, 12);
+  }
+
+.logo-container {
+  position: absolute;
+  top: 120px;      /* distance from the top */
+  left: 782px;     /* distance from the left */
+  z-index: 10;    /* keeps it on top of background */
+}
+
+.logo-container img {
+  width: 250px;
+  filter: drop-shadow(0 0 2px white);
+}
+
+
+</style>
+
+<div class="logo-container">
+  <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Sproutware Logo">
+</div>
+<div class="menu-buttons">
+<form action="/new" method="post">
+        <button class="menu-btn">🌱 New Game</button>
+    </form>
+    <form action="/continue" method="get">
+        <button class="menu-btn">🌼 Continue Game</button>
+    </form>
+  <form action="{{ url_for('inventory') }}">
+    <button type="submit">🌿 INVENTORY</button>
+  </form>
+</div>
+
+{% endblock %}
+
