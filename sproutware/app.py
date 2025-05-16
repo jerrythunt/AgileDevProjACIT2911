@@ -6,7 +6,7 @@ from pathlib import Path
 from sproutware.db import db
 from sproutware.models.seed import Seed
 from sproutware.models.time import Time
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta
 
 """INITIATES  APPLICATION, DO NOT TOUCH"""
 app = Flask(__name__)
@@ -26,34 +26,42 @@ def call_seeds():
     statement = db.select(Seed)
     records = db.session.execute(statement)
     results = records.scalar()
+    return results
+    
+def generate_daisy():
+    daisy = Seed(name = "Daisy", category = "flower", water_retention = timedelta(seconds=5), buffer_interval = timedelta(seconds=5))
+    db.session.add(daisy)
+    db.session.commit()
+    print(f'Seed Name: {daisy.name}, Watered: {daisy.is_watered}, Planted: {daisy.is_planted}')
+    return daisy
 
-# Added this to initialize a test seed in db for tests
+def generate_cactus():
+    cactus = Seed(name = "Cactus", category = "flower", water_retention = timedelta(seconds=30), buffer_interval = timedelta(seconds=20))
+    db.session.add(cactus)
+    db.session.commit()
+    print(f'Seed Name: {cactus.name}, Watered: {cactus.is_watered}, Planted: {cactus.is_planted}')
+    return cactus  
+
+    # Added this to initialize a test seed in db for tests
     if not results:
         seed = Seed(name="TestPlant")
         db.session.add(seed)
         db.session.commit()
-        results=seed
+        results = seed
 
     results.decay_hp()
-
     return results
 
 # Calls current time from db 
 def call_time_update():
-    # select the database for a Time table, and grab the specific entry where the id == 1
     statement = db.select(Time).where(Time.id == 1)
-    # Execute the statement
     records = db.session.execute(statement)
-    # Convert the statement/select to an object so we can use it (.scalar()/.scalars()) 
     results = records.scalar()
- 
-    # If it doesn't exist yet (app has been initialized), store current time to database
-    if results == None:
-        current_time = Time(name = "up_to_date")
+
+    if results is None:
+        current_time = Time(name="up_to_date")
         db.session.add(current_time)
         db.session.commit()
-        
-        # Call recursively so it updates in one go
         call_time_update()
         return call_time_update()
 
@@ -61,30 +69,23 @@ def call_time_update():
 
 # Update the current time entry in database to right now
 def update_time():
-    # select the database for a table named Time, and grab the first row
     statement = db.select(Time)
     records = db.session.execute(statement)
     current_time_row = records.scalars().first()
-    # Update the first row to current time 
     current_time_row.current_time = dt.now()
-    # Commit the change to the database
     db.session.commit()
-
     return current_time_row
 
 # Tell user when they first started playing the game
-def began_game():  
+def began_game():
     statement = db.select(Time).where(Time.id == 2)
     records = db.session.execute(statement)
     results = records.scalar()
- 
-    # If db entry doesnt exist (First time User), store the current time to database
-    if results == None:
-        began_time = Time(name = "first_launch_date")
+
+    if results is None:
+        began_time = Time(name="first_launch_date")
         db.session.add(began_time)
         db.session.commit()
-        
-        # Call recursively so it updates in one go
         began_game()
         return began_game()
 
@@ -101,9 +102,7 @@ def continue_game():
 @app.route("/inventory")
 def inventory():
     seeds = db.session.execute(db.select(Seed)).scalars().all()
-
     selected_seed = db.session.execute(db.select(Seed).where(Seed.is_selected == True)).scalar()
-
     if selected_seed:
         selected_id = selected_seed.id
     else:
@@ -111,81 +110,95 @@ def inventory():
 
     return render_template("inventory.html", seeds=seeds, selected_id=selected_id)
 
-
 @app.route("/select/<int:seed_id>", methods=["POST"])
 def select_seed(seed_id):
     selected_result = db.session.execute(db.select(Seed).where(Seed.is_selected == True)).scalar()
-
     if selected_result:
         selected_result.is_selected = False
 
     new_selected = db.get_or_404(Seed, seed_id)
     new_selected.is_selected = True
-
     db.session.commit()
+
     return redirect(url_for("inventory"))
 
+@app.route("/<plant_name>")
+def plant_page(plant_name):
+    seed = db.session.execute(db.select(Seed).where(Seed.name.ilike(plant_name))).scalar()
 
+    if not seed:
+        return f"Plant '{plant_name}' not found.", 404
 
-@app.route("/sunflower")
-def sunflower():
-    seeds = call_seeds()
-    # 'time_update' MUST run before 'start' (check pk's)
     time_update = call_time_update()
     start = began_game()
-    # countdown = 5.00 - (seeds.time_until_waterable()).total_seconds()
-    
-    countdown = seeds.time_until_waterable()
-    # if check == None:
-    #     countdown = "There is no countdown"
-    # elif check != None:
-    #     countdown = check
-    # else:
-    #     pass
-        
-    update_time() 
+    countdown = seed.time_until_waterable()
+    update_time()
 
-    # use the "home.html" template, store the result of each function to a variable that can be called in the html file. Ex: {{plant.name}}
-    return render_template("sunflower.html", plant = seeds, time_update = time_update, start = start, countdown = countdown)
+    try:
+        return render_template(
+            "plant_page.html",  # ✅ this is your dynamic template
+            plant=seed,
+            time_update=time_update,
+            start=start,
+            countdown=countdown
+        )
+    except:
+        return f"Template '{plant_name}.html' not found.", 404
+
+
+
+# @app.route("/sunflower")
+# def sunflower():
+#     seeds = call_seeds()
+#     if seeds == None:
+#         seed = Seed(name = "Sunflower", category = "flower")
+#         db.session.add(seed)
+#         db.session.commit()
+#         print('A new sunflower has been generated!')
+#         return render_template("dead_plant.html")
+#     # 'time_update' MUST run before 'start' (check pk's)
+#     time_update = call_time_update()
+#     start = began_game()
+#     # countdown = 5.00 - (seeds.time_until_waterable()).total_seconds()
+#     countdown = seeds.time_until_waterable()
+        
+#     update_time() 
+
+#     return render_template("sunflower.html", plant=seed, time_update=time_update, start=start, countdown=countdown)
 
 # Allows user to plant an unplanted seed
 @app.route("/plant/<int:seed_id>", methods=["POST"])
 def plant_seed(seed_id):
     seed = db.get_or_404(Seed, seed_id)
     seed.plant()
-    
-    return redirect(url_for("sunflower"))
+    return redirect(url_for("plant_page", plant_name=seed.name.lower()))
 
 # Allows user to water a seed if not watered
 @app.route("/water/<int:seed_id>", methods=["POST"])
 def water_seed(seed_id):
     seed = db.get_or_404(Seed, seed_id)
     msg = seed.water_plant()
-
-    return redirect(url_for("sunflower", message=msg))
+    return redirect(url_for("plant_page", plant_name=seed.name, message=msg))
 
 @app.route("/new", methods=["POST"])
 def new_game():
     try:
-        # Delete all existing Seed entries
         seeds = db.session.execute(db.select(Seed)).scalars().all()
         for seed in seeds:
             db.session.delete(seed)
-        # Delete all existing Time entries
         times = db.session.execute(db.select(Time)).scalars().all()
         for time in times:
             db.session.delete(time)
         db.session.commit()
-        # Create initial seed
+
         seed = Seed(name="sunflower", category="flower")
         db.session.add(seed)
-        
-        # Create time entries
+
         current_time = Time(name="up_to_date")
         first_launch = Time(name="first_launch_date")
         db.session.add(current_time)
         db.session.add(first_launch)
-        
+
         db.session.commit()
         return redirect(url_for("inventory"))
     except Exception as e:
@@ -194,6 +207,7 @@ def new_game():
         return redirect(url_for("home"))
 
 
-# When "python -m sprouteware.app" is run, it runs in debug mode on localhost:8888 
+
+
 if __name__ == "__main__":
-    app.run(debug = True, port = 8888)
+    app.run(debug=True, port=8888)

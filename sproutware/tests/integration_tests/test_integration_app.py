@@ -13,9 +13,9 @@ def client():
         db.drop_all()
 
 def test_home_page(client):
-    response = client.get('/sunflower')
+    response = client.get('/')
     assert response.status_code == 200
-    assert b"Planting seeds since:" in response.data
+    assert b"New Game" in response.data
 
 def test_time_initialization(client):
     with app.app_context():
