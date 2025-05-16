@@ -3,99 +3,140 @@
 
 <style>
     body {
-        background-color: #e8f5e9;
-        font-family: Arial, sans-serif;
+          background: url('{{ url_for("static", filename="images/topdown2.jpg") }}') center center / cover no-repeat fixed;
+        font-family: 'Architects Daughter', cursive;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+
+
     }
 
-    h1 {
-        text-align: center;
-        margin-top: 30px;
-        color: #2e7d32;
-    }
-
-    .card-container {
+    .center-wrapper {
         display: flex;
         justify-content: center;
-        flex-wrap: wrap;
-        margin: 30px auto;
-        max-width: 1000px;
+        align-items: center;
+        height: 100vh;
     }
 
-    .plant-card {
-        background: #ffffff;
-        border: 2px solid #a5d6a7;
-        border-radius: 15px;
-        padding: 20px;
-        margin: 15px;
-        width: 220px;
-        box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+    .inventory-grid {
+        margin-right: 40px;
+        display: grid;
+        grid-template-columns: repeat(4, 140px);
+        grid-template-rows: repeat(3, 140px);
+        gap: 0; /* no space between cells */
+    }
+
+    .grid-cell {
+        background: url('{{ url_for("static", filename="images/drawnborder1.png") }}') center/124.5% 124.5% no-repeat;
+        padding: 12px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
         text-align: center;
+        overflow: hidden;
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
     }
 
-    .plant-card h2 {
-        color: #388e3c;
+    .grid-cell p {
+        margin: 2px 0;
+        line-height: 1.2;
     }
 
-    .plant-card p {
-        margin: 8px 0;
-    }
-
-    .select-btn, .goto-btn {
-        padding: 10px 15px;
-        font-size: 14px;
-        margin-top: 10px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
+    .grid-cell > div, .grid-cell form {
+        position: relative;
+        z-index: 2;
     }
 
     .select-btn {
-        background-color: #81c784;
+        transition: 300ms ease;
+        padding: 6px 10px;
+        font-size: 12px;
+        margin-top: 8px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        background-color: #c9ae8a ;
         color: white;
     }
 
     .select-btn:hover {
-        background-color: #66bb6a;
+        background-color: #8d6e63;
     }
 
-    .goto-btn {
-        background-color: #4caf50;
-        color: white;
-    }
-
-    .goto-btn:hover {
-        background-color: #388e3c;
-    }
-
-    .selected-tag {
+    .main-menu-btn {
+        font-family: 'Montserrat', sans-serif;
+        position: absolute;
+        top: -16px;
+        left: 10px;
+        padding: 10px 16px;
+        font-size: 70px;
         font-weight: bold;
-        color: #2e7d32;
-        margin-top: 10px;
+        border-radius: 8px;
+        border: none;
+        text-decoration: none;
+        background-color:transparent;
+        opacity: 0.7;
+        color: white;
+        /* box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2); */
+        transition: background-color 0.2s ease;
+        z-index: 100;
+        transition: 200ms ease;
     }
+
+    .main-menu-btn:hover {
+        /* background-color: #8d6e63; */
+        opacity: 1;
+    }
+
+    .background-notebook {
+    position: absolute;
+    z-index: 0;
+    width: 620px;  /* slightly larger than grid (4×140 + padding/gap) */
+    height: 520px; /* slightly larger than 3×140 */
+    top: 53.25%;
+    left: 49.5%;
+    transform: translate(-50%, -50%);
+    pointer-events: none; /* lets clicks pass through */
+    }
+
+    .background-notebook img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transform: scale(1.65);
+    }
+
 </style>
 
-<h1>🌿 Your Plant Inventory</h1>
+<a class="main-menu-btn" href="{{ url_for('home') }}">🏡</a>
 
-<div class="card-container">
-    {% for seed in seeds %}
-    <div class="plant-card">
-        <h2>{{ seed.name.capitalize() }}</h2>
-        <p>Category: {{ seed.category }}</p>
-        <p>HP: {{ seed.hp }}</p>
-        <p>XP: {{ seed.xp }}</p>
-
-        {% if seed.id == selected_id %}
-            <div class="selected-tag">✅ Selected</div>
-            <form action="{{ url_for('sunflower') }}">
-                <button type="submit" class="goto-btn">Go to {{ seed.name }}</button>
-            </form>
-        {% else %}
-            <form action="{{ url_for('select_seed', seed_id=seed.id) }}" method="post">
-                <button type="submit" class="select-btn">Select</button>
-            </form>
-        {% endif %}
+<div class="center-wrapper">
+    <div class="background-notebook">
+        <img src="{{ url_for('static', filename='images/notebook5.png') }}" alt="Notebook Background">
     </div>
-    {% endfor %}
+    <div class="inventory-grid">
+        {% for i in range(12) %}
+            <div class="grid-cell">
+                {% if i < seeds|length %}
+                    {% set seed = seeds[i] %}
+                    <div>
+                        <p>{{ seed.name.capitalize() }}</p>
+                        <p>HP: {{ seed.hp }}</p>
+                        <p>XP: {{ seed.xp }}</p>
+                        <form action="{{ url_for('plant_page', plant_name=seed.name) }}">
+                            <button type="submit" class="select-btn">Go to {{ seed.name.capitalize() }}</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

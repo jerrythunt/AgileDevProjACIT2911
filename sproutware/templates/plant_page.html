@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+  .top-box.plant-background {
+    background-image: url("{{ url_for('static', filename='images/background.png') }}");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+  }
+
+</style>
+
+<div class="container">
+  <div class="top-section">
+
+    <!-- Left -->
+    <div class="left-box box">
+      {% if start and start.current_time %}
+        <h5>Planting seeds since: {{ start.current_time.strftime('%B %d, %Y') }}</h5>
+      {% else %}
+        <h5>Welcome! Your garden journey is just beginning 🌱</h5>
+      {% endif %}
+      <form action="{{ url_for('inventory') }}">
+        <button type="submit" class="water-button" style="margin-top: 20px;">
+            🌿 Go to Inventory
+        </button>
+      </form>
+    </div>
+
+    <!-- Center with background -->
+    <div class="top-box box plant-background">
+      <div class="top-box img">
+        {% if plant.is_planted %}
+          {% set prefix = plant.name.lower() %}
+          
+          {% if plant.hp == 0 %}
+            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_dead.png') }}" alt="Dead Plant">
+          
+          {% elif plant.xp < 50 and plant.hp >= 50 %}
+            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_seed.png') }}" alt="Stage 1 Healthy">
+          
+          {% elif plant.xp < 50 and plant.hp < 50 %}
+            <p>Decaying seed</p>
+            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_seed_decay.png') }}" alt="Decaying Seed">
+          
+          {% elif plant.xp >= 50 and plant.xp < 100 and plant.hp >= 50 %}
+            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_sapling.png') }}" alt="Stage 2 Healthy">
+          
+          {% elif plant.xp >= 50 and plant.xp < 100 and plant.hp < 50 %}
+            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_sapling_decay.png') }}" alt="Decaying Sapling">
+          
+          {% elif plant.xp == 100 and plant.hp >= 50 %}
+            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_mature.png') }}" alt="Stage 3 Healthy">
+          
+          {% elif plant.xp == 100 and plant.hp < 50 %}
+            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_mature_wilt.png') }}" alt="Stage 3 Wilting">
+          
+          {% else %}
+            <p>Unknown growth stage</p>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div class="right-box box">
+      <p>XP = {{ plant.xp }}, HP = {{ plant.hp }}</p>
+
+      {% if plant.hp == 0 %}
+        <h5>{{ plant.name }} has died. Try again next time 🌑</h5>
+
+      {% elif plant.is_watered %}
+        <h5>{{ plant.name }} is watered. It looks so happy!</h5>
+        {% if plant.time_of_watering %}
+          <h5>Last watered: {{ plant.time_of_watering.strftime('%A, %B %d at %I:%M %p') }}</h5>
+        {% endif %}
+        <h5>{{ countdown }} until you can water again</h5>
+
+      {% elif plant.is_planted %}
+        <h5>{{ plant.name }} needs watering!</h5>
+        <h5>Loses {{ plant.decay_amount }} HP every {{ plant.decay_interval.total_seconds()|int }} seconds if left dry.</h5>
+        {% if plant.time_of_watering %}
+          <h5>Last watered: {{ plant.time_of_watering.strftime('%A, %B %d at %I:%M %p') }}</h5>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Bottom -->
+  <div class="bottom-box box">
+    {% if plant.hp == 0 %}
+      <h5>This {{ plant.name }} has perished 🪦</h5>
+    {% elif not plant.is_planted %}
+      <form method="post" action="{{ url_for('plant_seed', seed_id=plant.id) }}">
+        <button type="submit" class="water-button">Plant your {{ plant.name }}</button>
+      </form>
+    {% else %}
+      <form method="post" action="{{ url_for('water_seed', seed_id=plant.id) }}">
+        <button type="submit" class="water-button">Water your {{ plant.name }}</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

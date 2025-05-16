@@ -19,9 +19,12 @@ def delete_tables():
 # Create a 'seed' object
 def generate_seed():
     # Call Seed class, and input necessary attributes
-    seed = Seed(name = "sunflower", category = "flower")
+    seed = Seed(name = "Sunflower", category = "flower")
+    seed2 = Seed(name = "Daisy", category = "flower")
+    seed3 = Seed(name = "Cactus", category = "flower")
     # Add the new object to the current session
-    db.session.add(seed)
+    db.session.add_all([seed, seed2, seed3])
+    db.session.commit()
     # Commit the new object to the database
     db.session.commit()
     # Print the objects attributes for debugging purposes
@@ -36,7 +39,3 @@ if __name__ == "__main__":
         delete_tables()
         create_tables()
         generate_seed()
-        # init_time = start_time()
-        # # result = db.session.execute(db.select(dt.now())).scalar()
-        # # print(f'The application started at:", {str(result)}. The type is {type(result)}')
-        # time_keeper()
