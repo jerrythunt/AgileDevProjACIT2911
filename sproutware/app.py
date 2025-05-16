@@ -124,36 +124,54 @@ def select_seed(seed_id):
 
 @app.route("/<plant_name>")
 def plant_page(plant_name):
-    seed = db.session.execute(db.select(Seed).where(Seed.name == plant_name)).scalar_one_or_none()
+    seed = db.session.execute(db.select(Seed).where(Seed.name.ilike(plant_name))).scalar()
+
     if not seed:
         return f"Plant '{plant_name}' not found.", 404
 
-
-@app.route("/sunflower")
-def sunflower():
-    seeds = call_seeds()
-    if seeds == None:
-        seed = Seed(name = "Sunflower", category = "flower")
-        db.session.add(seed)
-        db.session.commit()
-        print('A new sunflower has been generated!')
-        return render_template("dead_plant.html")
-    # 'time_update' MUST run before 'start' (check pk's)
     time_update = call_time_update()
     start = began_game()
-    # countdown = 5.00 - (seeds.time_until_waterable()).total_seconds()
-    countdown = seeds.time_until_waterable()
-        
-    update_time() 
+    countdown = seed.time_until_waterable()
+    update_time()
 
-    return render_template("sunflower.html", plant=seed, time_update=time_update, start=start, countdown=countdown)
+    try:
+        return render_template(
+            "plant_page.html",  # ✅ this is your dynamic template
+            plant=seed,
+            time_update=time_update,
+            start=start,
+            countdown=countdown
+        )
+    except:
+        return f"Template '{plant_name}.html' not found.", 404
+
+
+
+# @app.route("/sunflower")
+# def sunflower():
+#     seeds = call_seeds()
+#     if seeds == None:
+#         seed = Seed(name = "Sunflower", category = "flower")
+#         db.session.add(seed)
+#         db.session.commit()
+#         print('A new sunflower has been generated!')
+#         return render_template("dead_plant.html")
+#     # 'time_update' MUST run before 'start' (check pk's)
+#     time_update = call_time_update()
+#     start = began_game()
+#     # countdown = 5.00 - (seeds.time_until_waterable()).total_seconds()
+#     countdown = seeds.time_until_waterable()
+        
+#     update_time() 
+
+#     return render_template("sunflower.html", plant=seed, time_update=time_update, start=start, countdown=countdown)
 
 # Allows user to plant an unplanted seed
 @app.route("/plant/<int:seed_id>", methods=["POST"])
 def plant_seed(seed_id):
     seed = db.get_or_404(Seed, seed_id)
     seed.plant()
-    return redirect(url_for("plant_page", plant_name=seed.name))
+    return redirect(url_for("plant_page", plant_name=seed.name.lower()))
 
 # Allows user to water a seed if not watered
 @app.route("/water/<int:seed_id>", methods=["POST"])
@@ -187,6 +205,9 @@ def new_game():
         print(f"Error creating new game: {e}")
         db.session.rollback()
         return redirect(url_for("home"))
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8888)
