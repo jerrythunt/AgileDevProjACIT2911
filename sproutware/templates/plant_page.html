@@ -87,9 +87,9 @@
         {% if plant.time_of_watering %}
           <h5>Last watered: {{ plant.time_of_watering.strftime('%A, %B %d at %I:%M %p') }}</h5>
         {% endif %}
-        {% if plant.time_of_maturity != None %}
-          <h5>{{plant.name}} reached full maturity on {{ plant.time_of_maturity.strftime('%A, %B %d at %I:%M %p') }}</h5>
-        {% endif %}
+      {% endif %}
+      {% if plant.time_of_maturity != None %}
+        <h5>{{plant.name}} reached full maturity on {{ plant.time_of_maturity.strftime('%A, %B %d at %I:%M %p') }}</h5>
       {% endif %}
     </div>
   </div>
