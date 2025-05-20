@@ -28,15 +28,22 @@ def call_seeds():
     results = records.scalar()
     return results
     
+def generate_sunflower():
+    seed = Seed(name = "sunflower", category = "flower")
+    db.session.add(seed)
+    db.session.commit()
+    print(f'Seed Name: {seed.name}, Watered: {seed.is_watered}, Planted: {seed.is_planted}')
+    return seed  
+
 def generate_daisy():
-    daisy = Seed(name = "Daisy", category = "flower", water_retention = timedelta(seconds=5), buffer_interval = timedelta(seconds=5))
+    daisy = Seed(name = "Daisy", category = "flower", water_retention = timedelta(seconds=5), decay_interval = timedelta(seconds=5))
     db.session.add(daisy)
     db.session.commit()
     print(f'Seed Name: {daisy.name}, Watered: {daisy.is_watered}, Planted: {daisy.is_planted}')
     return daisy
 
 def generate_cactus():
-    cactus = Seed(name = "Cactus", category = "flower", water_retention = timedelta(seconds=30), buffer_interval = timedelta(seconds=20))
+    cactus = Seed(name = "Cactus", category = "flower", water_retention = timedelta(seconds=30), decay_interval = timedelta(seconds=20))
     db.session.add(cactus)
     db.session.commit()
     print(f'Seed Name: {cactus.name}, Watered: {cactus.is_watered}, Planted: {cactus.is_planted}')
@@ -103,6 +110,7 @@ def continue_game():
 def inventory():
     seeds = db.session.execute(db.select(Seed)).scalars().all()
     selected_seed = db.session.execute(db.select(Seed).where(Seed.is_selected == True)).scalar()
+
     if selected_seed:
         selected_id = selected_seed.id
     else:
@@ -122,28 +130,70 @@ def select_seed(seed_id):
 
     return redirect(url_for("inventory"))
 
-@app.route("/<plant_name>")
-def plant_page(plant_name):
-    seed = db.session.execute(db.select(Seed).where(Seed.name.ilike(plant_name))).scalar()
+@app.route("/plant/<int:plant_id>")
+def plant_page(plant_id):
+    seed = db.session.execute(
+        db.select(Seed).where(Seed.id == plant_id)
+    ).scalar()
+    all_seeds = db.session.execute(db.select(Seed)).scalars().all()
+    print(f"{seed} was loaded")
+    print(f'List of all seeds: {all_seeds}')
+
+    if len(all_seeds) == 0:
+            seed = Seed(name = "Sunflower", category = "flower")
+            db.session.add(seed)
+            db.session.commit()
+            print('A new sunflower has been generated!')
+            return render_template("dead_plant.html")
+    
+    if seed == None:
+        return render_template("dead_plant.html")
 
     if not seed:
-        return f"Plant '{plant_name}' not found.", 404
+        return f"Plant id not found.", 404
 
     time_update = call_time_update()
     start = began_game()
     countdown = seed.time_until_waterable()
     update_time()
+    
+    if seed.name == "sunflower" or seed.name == "Sunflower":
+        if seed.produced_seeds == False:
+            if seed.xp == 100:
+                seed.produced_seeds = True
+                seed.matured_time()
+                generate_daisy()
+                print('Your plant has fully matured! A new Daisy seed has been added to your inventory!')
+
+    if seed.name == "Daisy" or seed.name == "daisy":
+        if seed.produced_seeds == False:
+            if seed.xp == 100:
+                seed.produced_seeds = True
+                seed.matured_time()
+                generate_cactus()
+                print('Your plant has fully matured! A new Cactus seed has been added to your inventory!')
+
+    if seed.name == "cactus" or seed.name == "Cactus":
+        if seed.produced_seeds == False:
+            if seed.xp == 100:
+                seed.produced_seeds = True
+                seed.matured_time()
+                generate_sunflower()
+                generate_daisy()
+                print('Your Cactus has fully matured! A new Sunflower and Daisy seed has been added to your inventory!')
+
 
     try:
         return render_template(
             "plant_page.html",  # ✅ this is your dynamic template
             plant=seed,
-            time_update=time_update,
-            start=start,
-            countdown=countdown
+            time_update = time_update,
+            start = start,
+            countdown = countdown
         )
+    
     except:
-        return f"Template '{plant_name}.html' not found.", 404
+        return f"Template not found.", 404
 
 
 
@@ -171,14 +221,14 @@ def plant_page(plant_name):
 def plant_seed(seed_id):
     seed = db.get_or_404(Seed, seed_id)
     seed.plant()
-    return redirect(url_for("plant_page", plant_name=seed.name.lower()))
+    return redirect(url_for("plant_page", plant_id=seed.id))
 
 # Allows user to water a seed if not watered
 @app.route("/water/<int:seed_id>", methods=["POST"])
 def water_seed(seed_id):
     seed = db.get_or_404(Seed, seed_id)
     msg = seed.water_plant()
-    return redirect(url_for("plant_page", plant_name=seed.name, message=msg))
+    return redirect(url_for("plant_page", plant_id=seed.id, message=msg))
 
 @app.route("/new", methods=["POST"])
 def new_game():

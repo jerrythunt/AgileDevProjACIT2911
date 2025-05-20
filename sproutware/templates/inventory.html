@@ -8,8 +8,6 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
-
-
     }
 
     .center-wrapper {
@@ -129,7 +127,7 @@
                         <p>{{ seed.name.capitalize() }}</p>
                         <p>HP: {{ seed.hp }}</p>
                         <p>XP: {{ seed.xp }}</p>
-                        <form action="{{ url_for('plant_page', plant_name=seed.name) }}">
+                        <form action="{{ url_for('plant_page', plant_id=seed.id) }}">
                             <button type="submit" class="select-btn">Go to {{ seed.name.capitalize() }}</button>
                         </form>
                     </div>
