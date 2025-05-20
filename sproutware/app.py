@@ -152,13 +152,13 @@ def select_seed(seed_id):
 
     return redirect(url_for("inventory"))
 
-# @app.route("/plant_dead")
-# def dead_plant_static():
-#     return render_template("dead_plant.html")
+@app.route("/plant_dead")
+def dead_plant_static():
+    return render_template("dead_plant.html")
 
-# @app.route("/plants_dead")
-# def dead_plants_static():
-#     return render_template("all_seeds_dead.html")
+@app.route("/plants_dead")
+def dead_plants_static():
+    return render_template("all_seeds_dead.html")
 
 @app.route("/plant/<int:plant_id>")
 def plant_page(plant_id):
