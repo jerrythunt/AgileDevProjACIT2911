@@ -62,12 +62,11 @@
 <form action="/new" method="post">
         <button class="menu-btn">🌱 New Game</button>
     </form>
-    <form action="/continue" method="get">
-        <button class="menu-btn">🌼 Continue Game</button>
+    {% if results != None %}
+        <form action="/continue" method="get">
+          <button class="menu-btn">🌼 Continue Game</button>
+    {% endif %}
     </form>
-  <form action="{{ url_for('inventory') }}">
-    <button type="submit">🌿 INVENTORY</button>
-  </form>
 </div>
 
 {% endblock %}

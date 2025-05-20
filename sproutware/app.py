@@ -85,6 +85,7 @@ def update_time():
 
 # Tell user when they first started playing the game
 def began_game():
+    
     statement = db.select(Time).where(Time.id == 2)
     records = db.session.execute(statement)
     results = records.scalar()
@@ -100,7 +101,12 @@ def began_game():
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    
+    statement = db.select(Time).where(Time.id == 2)
+    records = db.session.execute(statement)
+    results = records.scalar()
+    
+    return render_template("home.html", results = results)
 
 @app.route("/continue")
 def continue_game():
@@ -132,9 +138,7 @@ def select_seed(seed_id):
 
 @app.route("/plant/<int:plant_id>")
 def plant_page(plant_id):
-    seed = db.session.execute(
-        db.select(Seed).where(Seed.id == plant_id)
-    ).scalar()
+    seed = db.session.execute(db.select(Seed).where(Seed.id == plant_id)).scalar()
     all_seeds = db.session.execute(db.select(Seed)).scalars().all()
     print(f"{seed} was loaded")
     print(f'List of all seeds: {all_seeds}')
@@ -153,7 +157,8 @@ def plant_page(plant_id):
         return f"Plant id not found.", 404
 
     time_update = call_time_update()
-    start = began_game()
+
+    player_start_time = (db.session.execute(db.select(Time).where(Time.id == 2))).scalar()
     countdown = seed.time_until_waterable()
     update_time()
     
@@ -187,34 +192,14 @@ def plant_page(plant_id):
         return render_template(
             "plant_page.html",  # ✅ this is your dynamic template
             plant=seed,
+            start = player_start_time,
             time_update = time_update,
-            start = start,
             countdown = countdown
         )
     
     except:
         return f"Template not found.", 404
 
-
-
-# @app.route("/sunflower")
-# def sunflower():
-#     seeds = call_seeds()
-#     if seeds == None:
-#         seed = Seed(name = "Sunflower", category = "flower")
-#         db.session.add(seed)
-#         db.session.commit()
-#         print('A new sunflower has been generated!')
-#         return render_template("dead_plant.html")
-#     # 'time_update' MUST run before 'start' (check pk's)
-#     time_update = call_time_update()
-#     start = began_game()
-#     # countdown = 5.00 - (seeds.time_until_waterable()).total_seconds()
-#     countdown = seeds.time_until_waterable()
-        
-#     update_time() 
-
-#     return render_template("sunflower.html", plant=seed, time_update=time_update, start=start, countdown=countdown)
 
 # Allows user to plant an unplanted seed
 @app.route("/plant/<int:seed_id>", methods=["POST"])
@@ -232,32 +217,45 @@ def water_seed(seed_id):
 
 @app.route("/new", methods=["POST"])
 def new_game():
-    try:
-        seeds = db.session.execute(db.select(Seed)).scalars().all()
-        for seed in seeds:
-            db.session.delete(seed)
-        times = db.session.execute(db.select(Time)).scalars().all()
-        for time in times:
-            db.session.delete(time)
-        db.session.commit()
+    
+    statement = db.select(Time).where(Time.id == 2)
+    records = db.session.execute(statement)
+    results = records.scalar()
+    
+    if results != None:
+        return render_template("new_game_confirmation.html")
+    
+    began_game()
+    generate_sunflower()
+    
+    return redirect(url_for("inventory"))
+    # except Exception as e:
+    #     print(f"Error creating new game: {e}")
+    #     db.session.rollback()
+    #     return redirect(url_for("home"))
 
-        seed = Seed(name="sunflower", category="flower")
-        db.session.add(seed)
-
-        current_time = Time(name="up_to_date")
-        first_launch = Time(name="first_launch_date")
-        db.session.add(current_time)
-        db.session.add(first_launch)
-
-        db.session.commit()
-        return redirect(url_for("inventory"))
-    except Exception as e:
-        print(f"Error creating new game: {e}")
-        db.session.rollback()
+@app.route("/new_game_confirmation", methods=["GET", "POST"])
+def restart_game():
+    if request.method == "POST":
+        print('Resetting the database for a clear save....')
+        delete_tables()
+        create_tables()
+        print('The database has been cleared.')
         return redirect(url_for("home"))
+    
+    # GET method — just show the confirmation page
+    return render_template("new_game_confirmation.html")
 
 
+# creates empty tables db
+def create_tables():
+    create = db.create_all()
+    return create
 
+# deletes all tables from db
+def delete_tables():
+    delete = db.drop_all()
+    return delete
 
 if __name__ == "__main__":
     app.run(debug=True, port=8888)
