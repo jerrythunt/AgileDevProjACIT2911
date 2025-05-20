@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<p>Are you sure you want to restart? You will lose all your progress.</p>
+
+<form action="{{ url_for('restart_game') }}" method="post">
+    <button type="submit">🌿 Restart my file </button>
+</form>
+
+
+  <form action="{{ url_for('home') }}">
+    <button type="submit">🌿 Back to home </button>
+  </form>
+{% endblock %}

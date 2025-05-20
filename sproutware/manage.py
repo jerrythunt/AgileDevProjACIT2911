@@ -36,6 +36,8 @@ def generate_seed():
 if __name__ == "__main__":
     # given the context of app 
     with app.app_context():
+        print('The database is being reset....')
         delete_tables()
         create_tables()
-        generate_seed()
+        print('The database has been reset.')
+        # generate_seed()
