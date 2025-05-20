@@ -3,7 +3,7 @@
 
 <style>
     body {
-          background: url('{{ url_for("static", filename="images/topdown2.jpg") }}') center center / cover no-repeat fixed;
+        background: url('{{ url_for("static", filename="images/topdown2.jpg") }}') center center / cover no-repeat fixed;
         font-family: 'Architects Daughter', cursive;
         margin: 0;
         padding: 0;
@@ -67,6 +67,7 @@
         background-color: #8d6e63;
     }
 
+
     .main-menu-btn {
         font-family: 'Montserrat', sans-serif;
         position: absolute;
@@ -85,10 +86,38 @@
         transition: background-color 0.2s ease;
         z-index: 100;
         transition: 200ms ease;
+        opacity: 0.7;
     }
 
     .main-menu-btn:hover {
         /* background-color: #8d6e63; */
+        opacity: 1;
+        text-shadow: 0 0 2px #fff, 0 0 4px #0ff;
+    }
+
+    .achievements-btn {
+        font-family: 'Montserrat', sans-serif;
+        position: absolute;
+        top: 0px;
+        left: 1155px;
+        padding: 10px 16px;
+        font-size: 67px;
+        font-weight: bold;
+        border-radius: 8px;
+        border: none;
+        text-decoration: none;
+        background-color:transparent;
+        opacity: 0.7;
+        color: white;
+        /* box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2); */
+        transition: background-color 0.2s ease;
+        z-index: 100;
+        transition: 200ms ease;
+        opacity: 0.7;
+    }
+
+    .achievements-btn:hover {
+        text-shadow: 0 0 2px #fff, 0 0 4px #0ff;
         opacity: 1;
     }
 
@@ -113,6 +142,7 @@
 </style>
 
 <a class="main-menu-btn" href="{{ url_for('home') }}">🏡</a>
+<a class="achievements-btn" href="{{ url_for('achievements') }}">🏅</a>
 
 <div class="center-wrapper">
     <div class="background-notebook">

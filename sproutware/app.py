@@ -118,6 +118,22 @@ def inventory():
 
     return render_template("inventory.html", seeds=seeds, selected_id=selected_id)
 
+@app.route("/achievements")
+def achievements():
+    seeds = list(db.session.execute(db.select(Seed)).scalars())  # wrap in list
+
+    achievements = {
+        "game_started": len(seeds) > 0,
+        "planted_sunflower": any(s.name.lower() == "sunflower" and s.is_planted for s in seeds),
+        "planted_daisy": any(s.name.lower() == "daisy" and s.is_planted for s in seeds),
+        "planted_cactus": any(s.name.lower() == "cactus" and s.is_planted for s in seeds),
+        "first_water": any(s.is_watered for s in seeds),
+        "all_death": any(s.hp <= 0 for s in seeds),
+    }
+
+    return render_template("achievements.html", achievements=achievements)
+
+
 @app.route("/select/<int:seed_id>", methods=["POST"])
 def select_seed(seed_id):
     selected_result = db.session.execute(db.select(Seed).where(Seed.is_selected == True)).scalar()
@@ -129,6 +145,14 @@ def select_seed(seed_id):
     db.session.commit()
 
     return redirect(url_for("inventory"))
+
+# @app.route("/plant_dead")
+# def dead_plant_static():
+#     return render_template("dead_plant.html")
+
+# @app.route("/plants_dead")
+# def dead_plants_static():
+#     return render_template("all_seeds_dead.html")
 
 @app.route("/plant/<int:plant_id>")
 def plant_page(plant_id):

@@ -1,14 +1,72 @@
-{% extends "layout.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Plant is Dead</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-image: url("{{ url_for('static', filename='images/dead_plants.png') }}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      height: 100vh;
+      font-family: sans-serif;
+    }
 
+    p{
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 19px;
+    }
 
-<p>All of your plants have died😒</p>
+    .overlay {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100%;
+      padding-left:700px; /* Distance from the left */
+    }
 
-<p>A new seed has been given to you in your inventory. Make sure to take care of this one!</p>
-<div>
-    <img src="{{ url_for('static', filename='images/sunflower_dead.png') }}" alt="Dead Plant">
-</div>
-  <form action="{{ url_for('inventory') }}">
-    <button type="submit">🌿 INVENTORY</button>
-  </form>
-{% endblock %}
+    .button-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .button {
+      padding: 12px 24px;
+      background-color: #4c4c4cbb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .button:hover {
+      background-color: #2d2d2dbb;
+    }
+
+    .message {
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="button-box">
+      <div class="message">Your plants are dead...
+        <p>A new seed has been generated for you, look in your inventory.</p>
+      </div>
+      <form action="{{ url_for('inventory') }}">
+        <button class="button">Return to Inventory</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
