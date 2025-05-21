@@ -83,7 +83,6 @@
     pointer-events: none;
   }
 
-  /* ✅ Make only Daisy mature images smaller */
   .plant-image-wrapper img[src*="daisy_mature"],
   .plant-image-wrapper img[src*="daisy_mature_wilt"] {
     transform: scale(0.60);
@@ -91,18 +90,9 @@
     margin-bottom: 40px;
   }
 
-  /* ✅ Make only Daisy mature images smaller */
-.plant-image-wrapper img[src*="daisy_mature"],
-.plant-image-wrapper img[src*="daisy_mature_wilt"] {
-  transform: scale(0.60);
-  transform-origin: center bottom;
-  margin-bottom: 40px;
-}
-
-/* ✅ Move only cactus sapling images downward */
-.plant-image-wrapper img[src*="cactus_sapling"] {
-  transform: translateY(50px);
-}
+  .plant-image-wrapper img[src*="cactus_sapling"] {
+    transform: translateY(50px);
+  }
 
   .bottom-box {
     height: 35vh;
@@ -125,8 +115,14 @@
     background: rgb(206, 206, 206);
     color: black;
     cursor: pointer;
+    transition: all 0.3s ease-in-out;
   }
 
+  .water-button:hover {
+    background-color: #28a745;
+    color: white;
+    transform: scale(1.08);
+  }
 
   h5 {
     margin-top: 1rem;
