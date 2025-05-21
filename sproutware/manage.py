@@ -19,14 +19,14 @@ def delete_tables():
 # Create a 'seed' object
 def generate_seed():
     # Call Seed class, and input necessary attributes
-    seed = Seed(name = "Sunflower", category = "flower")
-    seed2 = Seed(name = "Daisy", category = "flower")
-    seed3 = Seed(name = "Cactus", category = "flower")
+    seed = Seed(name = "sunflower", category = "flower")
+    # seed2 = Seed(name = "Daisy", category = "flower")
+    # seed3 = Seed(name = "Cactus", category = "flower")
     # Add the new object to the current session
-    db.session.add_all([seed, seed2, seed3])
+    # db.session.add_all([seed, seed2, seed3])
+    db.session.add(seed)
     db.session.commit()
     # Commit the new object to the database
-    db.session.commit()
     # Print the objects attributes for debugging purposes
     print(f'Seed Name: {seed.name}, Watered: {seed.is_watered}, Planted: {seed.is_planted}')
     # Return the newly created object
@@ -36,6 +36,8 @@ def generate_seed():
 if __name__ == "__main__":
     # given the context of app 
     with app.app_context():
+        print('The database is being reset....')
         delete_tables()
         create_tables()
-        generate_seed()
+        print('The database has been reset.')
+        # generate_seed()

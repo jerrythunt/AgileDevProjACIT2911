@@ -2,105 +2,229 @@
 {% block content %}
 
 <style>
-  .top-box.plant-background {
-    background-image: url("{{ url_for('static', filename='images/background.png') }}");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: transparent;
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: url("{{ url_for('static', filename='images/background.png') }}") no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Courier New', monospace;
+    color: white;
   }
 
+  .container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .top-section {
+    display: flex;
+    height: 65vh;
+    position: relative;
+    width: 100%;
+  }
+
+  .left-box,
+  .right-box {
+    width: 18%;
+    padding: 1rem;
+    font-size: min(1.9vw, 1.9rem);
+    color: black;
+    background-color: transparent;
+    border-radius: 12px;
+    overflow-y: auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  .top-box {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    z-index: 1;
+  }
+
+  .top-box.img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .plant-stats {
+    position: absolute;
+    top: 160px;
+    left: 50px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 15px 14px;
+    border-radius: 10px;
+    font-size: 1.3rem;
+    text-align: center;
+    color: white;
+    z-index: 3;
+  }
+
+  .plant-image-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(300px);
+    z-index: 2;
+  }
+
+  .plant-image-wrapper img {
+    max-height: 100%;
+    width: auto;
+    image-rendering: pixelated;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  /* ✅ Make only Daisy mature images smaller */
+  .plant-image-wrapper img[src*="daisy_mature"],
+  .plant-image-wrapper img[src*="daisy_mature_wilt"] {
+    transform: scale(0.60);
+    transform-origin: center bottom;
+    margin-bottom: 40px;
+  }
+
+  /* ✅ Make only Daisy mature images smaller */
+.plant-image-wrapper img[src*="daisy_mature"],
+.plant-image-wrapper img[src*="daisy_mature_wilt"] {
+  transform: scale(0.60);
+  transform-origin: center bottom;
+  margin-bottom: 40px;
+}
+
+/* ✅ Move only cactus sapling images downward */
+.plant-image-wrapper img[src*="cactus_sapling"] {
+  transform: translateY(50px);
+}
+
+  .bottom-box {
+    height: 35vh;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .button-wrapper {
+    position: absolute;
+    bottom: 30px;
+    left: 100px;
+  }
+
+  .water-button {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    padding: 18px 26px;
+    border-radius: 8px;
+    background: rgb(206, 206, 206);
+    color: black;
+    cursor: pointer;
+  }
+
+
+  h5 {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
 </style>
 
 <div class="container">
+
   <div class="top-section">
 
-    <!-- Left -->
+    <!-- Left Info -->
     <div class="left-box box">
       {% if start and start.current_time %}
-        <h5>Planting seeds since: {{ start.current_time.strftime('%B %d, %Y') }}</h5>
+        <h5>🌱 Planting seeds since: {{ start.current_time.strftime('%B %d, %Y') }}</h5>
       {% else %}
-        <h5>Welcome! Your garden journey is just beginning 🌱</h5>
+        <h5>Welcome! Your garden journey is just beginning 🌿</h5>
       {% endif %}
       <form action="{{ url_for('inventory') }}">
         <button type="submit" class="water-button" style="margin-top: 20px;">
-            🌿 Go to Inventory
+            📦 Go to Inventory
         </button>
       </form>
+      {% if plant.produced_seeds %}
+        <h5>🎉 {{ plant.name }} has fully matured and given you a new seed. Check your inventory!</h5>
+      {% endif %}
     </div>
 
-    <!-- Center with background -->
+    <!-- Center Plant -->
     <div class="top-box box plant-background">
       <div class="top-box img">
         {% if plant.is_planted %}
-          {% set prefix = plant.name.lower() %}
-          
-          {% if plant.hp == 0 %}
-            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_dead.png') }}" alt="Dead Plant">
-          
-          {% elif plant.xp < 50 and plant.hp >= 50 %}
-            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_seed.png') }}" alt="Stage 1 Healthy">
-          
-          {% elif plant.xp < 50 and plant.hp < 50 %}
-            <p>Decaying seed</p>
-            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_seed_decay.png') }}" alt="Decaying Seed">
-          
-          {% elif plant.xp >= 50 and plant.xp < 100 and plant.hp >= 50 %}
-            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_sapling.png') }}" alt="Stage 2 Healthy">
-          
-          {% elif plant.xp >= 50 and plant.xp < 100 and plant.hp < 50 %}
-            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_sapling_decay.png') }}" alt="Decaying Sapling">
-          
-          {% elif plant.xp == 100 and plant.hp >= 50 %}
-            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_mature.png') }}" alt="Stage 3 Healthy">
-          
-          {% elif plant.xp == 100 and plant.hp < 50 %}
-            <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_mature_wilt.png') }}" alt="Stage 3 Wilting">
-          
-          {% else %}
-            <p>Unknown growth stage</p>
-          {% endif %}
+          <div class="plant-stats">
+            🧬 XP = {{ plant.xp }} <br>❤️ HP = {{ plant.hp }}
+          </div>
+          <div class="plant-image-wrapper">
+            {% set prefix = plant.name.lower() %}
+            {% if plant.hp == 0 %}
+              <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_dead.png') }}" alt="Dead Plant">
+            {% elif plant.xp < 50 and plant.hp >= 50 %}
+              <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_seed.png') }}" alt="Seed">
+            {% elif plant.xp < 50 and plant.hp < 50 %}
+              <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_seed_decay.png') }}" alt="Decaying Seed">
+            {% elif plant.xp >= 50 and plant.xp < 100 and plant.hp >= 50 %}
+              <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_sapling.png') }}" alt="Sapling">
+            {% elif plant.xp >= 50 and plant.xp < 100 and plant.hp < 50 %}
+              <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_sapling_decay.png') }}" alt="Decaying Sapling">
+            {% elif plant.xp == 100 and plant.hp >= 50 %}
+              <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_mature.png') }}" alt="Mature">
+            {% elif plant.xp == 100 and plant.hp < 50 %}
+              <img src="{{ url_for('static', filename='images/' ~ prefix ~ '_mature_wilt.png') }}" alt="Wilted Mature">
+            {% else %}
+              <p>Unknown growth stage</p>
+            {% endif %}
+          </div>
         {% endif %}
       </div>
     </div>
 
-    <!-- Right -->
+    <!-- Right Info -->
     <div class="right-box box">
-      <p>XP = {{ plant.xp }}, HP = {{ plant.hp }}</p>
-
       {% if plant.hp == 0 %}
-        <h5>{{ plant.name }} has died. Try again next time 🌑</h5>
-
+        <h5>{{ plant.name }} has died. Try again next time.</h5>
       {% elif plant.is_watered %}
-        <h5>{{ plant.name }} is watered. It looks so happy!</h5>
+        <h5>💧 {{ plant.name }} is watered and happy!</h5>
         {% if plant.time_of_watering %}
           <h5>Last watered: {{ plant.time_of_watering.strftime('%A, %B %d at %I:%M %p') }}</h5>
         {% endif %}
-        <h5>{{ countdown }} until you can water again</h5>
-
+        <h5>⏳ {{ countdown }} until you can water again</h5>
       {% elif plant.is_planted %}
-        <h5>{{ plant.name }} needs watering!</h5>
-        <h5>Loses {{ plant.decay_amount }} HP every {{ plant.decay_interval.total_seconds()|int }} seconds if left dry.</h5>
+        <h5>⚠️ {{ plant.name }} needs watering!</h5>
+        <h5>-{{ plant.decay_amount }} HP every {{ plant.decay_interval.total_seconds()|int }}s</h5>
         {% if plant.time_of_watering %}
           <h5>Last watered: {{ plant.time_of_watering.strftime('%A, %B %d at %I:%M %p') }}</h5>
         {% endif %}
       {% endif %}
+
+      {% if plant.time_of_maturity %}
+        <h5>🌸 Matured on: {{ plant.time_of_maturity.strftime('%A, %B %d at %I:%M %p') }}</h5>
+      {% endif %}
     </div>
   </div>
 
-  <!-- Bottom -->
+  <!-- Bottom Button -->
   <div class="bottom-box box">
-    {% if plant.hp == 0 %}
-      <h5>This {{ plant.name }} has perished 🪦</h5>
-    {% elif not plant.is_planted %}
-      <form method="post" action="{{ url_for('plant_seed', seed_id=plant.id) }}">
-        <button type="submit" class="water-button">Plant your {{ plant.name }}</button>
-      </form>
-    {% else %}
-      <form method="post" action="{{ url_for('water_seed', seed_id=plant.id) }}">
-        <button type="submit" class="water-button">Water your {{ plant.name }}</button>
-      </form>
-    {% endif %}
+    <div class="button-wrapper">
+      {% if plant.hp == 0 %}
+        <h5>This {{ plant.name }} has perished 🪦</h5>
+      {% elif not plant.is_planted %}
+        <form method="post" action="{{ url_for('plant_seed', seed_id=plant.id) }}">
+          <button type="submit" class="water-button">🌱 Plant your {{ plant.name }}</button>
+        </form>
+      {% else %}
+        <form method="post" action="{{ url_for('water_seed', seed_id=plant.id) }}">
+          <button type="submit" class="water-button">💧 Water your {{ plant.name }}</button>
+        </form>
+      {% endif %}
+    </div>
   </div>
 </div>
 

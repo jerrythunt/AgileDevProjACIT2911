@@ -7,7 +7,7 @@
     body {
       margin: 0;
       padding: 0;
-      background-image: url("{{ url_for('static', filename='images/plant_dead.png') }}");
+      background-image: url("{{ url_for('static', filename='images/plants_dead.png') }}");
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
@@ -50,7 +50,7 @@
     }
 
     .message {
-      color: blacks;
+      color: black;
       font-size: 32px;
       font-weight: bold;
       margin-bottom: 10px;
@@ -60,8 +60,8 @@
 <body>
   <div class="overlay">
     <div class="button-box">
-      <div class="message">Your plant is dead...
-        <p>Don't forget to take care of your plants! They have feelings too....</p>
+      <div class="message">Your plants are dead...
+        <p>A new seed has been generated for you, look in your inventory.</p>
       </div>
       <form action="{{ url_for('inventory') }}">
         <button class="button">Return to Inventory</button>
