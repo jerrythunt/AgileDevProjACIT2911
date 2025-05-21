@@ -56,12 +56,12 @@
 
   .plant-stats {
     position: absolute;
-    top: 160px;
+    top: 5px;
     left: 50px;
     background-color: rgba(0, 0, 0, 0.5);
-    padding: 15px 14px;
+    padding: 0px 12px;
     border-radius: 10px;
-    font-size: 1.3rem;
+    font-size: 1.6rem;
     text-align: center;
     color: white;
     z-index: 3;
@@ -83,7 +83,7 @@
     pointer-events: none;
   }
 
-  /* ✅ Make only Daisy mature images smaller */
+
   .plant-image-wrapper img[src*="daisy_mature"],
   .plant-image-wrapper img[src*="daisy_mature_wilt"] {
     transform: scale(0.60);
@@ -91,7 +91,7 @@
     margin-bottom: 40px;
   }
 
-  /* ✅ Make only Daisy mature images smaller */
+
 .plant-image-wrapper img[src*="daisy_mature"],
 .plant-image-wrapper img[src*="daisy_mature_wilt"] {
   transform: scale(0.60);
@@ -99,7 +99,7 @@
   margin-bottom: 40px;
 }
 
-/* ✅ Move only cactus sapling images downward */
+
 .plant-image-wrapper img[src*="cactus_sapling"] {
   transform: translateY(50px);
 }
@@ -122,7 +122,7 @@
     font-size: 1.2rem;
     padding: 18px 26px;
     border-radius: 8px;
-    background: rgb(206, 206, 206);
+    background: transparent;
     color: black;
     cursor: pointer;
   }
@@ -138,7 +138,6 @@
 
   <div class="top-section">
 
-    <!-- Left Info -->
     <div class="left-box box">
       {% if start and start.current_time %}
         <h5>🌱 Planting seeds since: {{ start.current_time.strftime('%B %d, %Y') }}</h5>
@@ -155,12 +154,12 @@
       {% endif %}
     </div>
 
-    <!-- Center Plant -->
+
     <div class="top-box box plant-background">
       <div class="top-box img">
         {% if plant.is_planted %}
           <div class="plant-stats">
-            🧬 XP = {{ plant.xp }} <br>❤️ HP = {{ plant.hp }}
+            🧬 XP = {{ plant.xp }} ❤️ HP = {{ plant.hp }}
           </div>
           <div class="plant-image-wrapper">
             {% set prefix = plant.name.lower() %}
@@ -186,7 +185,6 @@
       </div>
     </div>
 
-    <!-- Right Info -->
     <div class="right-box box">
       {% if plant.hp == 0 %}
         <h5>{{ plant.name }} has died. Try again next time.</h5>
@@ -210,7 +208,7 @@
     </div>
   </div>
 
-  <!-- Bottom Button -->
+
   <div class="bottom-box box">
     <div class="button-wrapper">
       {% if plant.hp == 0 %}
