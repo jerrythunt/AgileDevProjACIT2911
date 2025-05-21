@@ -17,7 +17,14 @@ class Seed(db.Model):
     water_retention = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=5)) # change this for different plants
     is_selected = db.mapped_column(db.Boolean, nullable=False, default=False)
     decay_amount = db.mapped_column(db.Integer, nullable = False, default = 10) # change this for different plants
+<<<<<<< HEAD
     decay_interval = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=10)) # change this for different plants
+=======
+    decay_interval = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=15)) # change this for different plants
+    produced_seeds = db.mapped_column(db.Boolean, nullable = False, default = False)
+    time_of_maturity = db.mapped_column(db.DateTime, nullable = True, default = None)
+    time_of_decay = db.mapped_column(db.DateTime, nullable = True, default = None)
+>>>>>>> devmain
 
     # Declare methods that we can call to update attributes
     # def function(self):
@@ -46,19 +53,13 @@ class Seed(db.Model):
             print(f'{self.name} is already watered! (if self.is_watered = {self.is_watered})')
             return self.time_until_waterable()
         
-        if not self.is_waterable_check():
-            time_left_to_water = self.time_until_waterable()
-            seconds = int(time_left_to_water.total_seconds())
-            minutes = seconds // 60
-            seconds = seconds % 60
-            return f"{self.name} is already watered. Wait {minutes} min {seconds} sec."
-        
         self.is_watered = True
         self.add_xp()
-        self.add_hp()
         self.decay_hp()
-        # self.time_until_waterable()
+        self.add_hp()
         self.time_of_watering = dt.now()
+
+        # self.time_until_waterable()
         db.session.commit()
 
         return f"{self.name} has been watered. It looks very happy!"
@@ -70,11 +71,11 @@ class Seed(db.Model):
         db.session.commit()
         return f'{self.name} needs to be watered!'
     
- # return True or False whether the plant can be watered again
-    def is_waterable_check(self):
-        self.reset_is_watered()
-        return not self.is_watered
-    
+    def matured_time(self):
+        if self.xp == 100:
+            self.time_of_maturity = dt.now()
+            return self.time_of_maturity
+
 # CALLED IN MAIN FUNCTIONS
 
     # add 20 XP to plant
@@ -116,23 +117,29 @@ class Seed(db.Model):
         return f'{minutes} minutes, {seconds} seconds'
     
     def decay_hp(self):
+        if self.is_planted == False:
+            return
         if self.time_of_watering == None:
             return
         now = dt.now()
         elapsed = now - self.time_of_watering
         print(f' {elapsed} (time elapsed) is {now} (now) - {self.time_of_watering} (last time it was watered)')
-        print(f'Elapsed type: {type(elapsed)}')
+        print(f'Elapsed: {elapsed}')
 
         decay_cycles = elapsed // self.decay_interval
-        print(f'Decay cycles type:{decay_cycles} (from dividing elapsed and self.decay_interval)')
+        print(f'Decay Interval: {self.decay_interval}')
+        print(f'Decay cycles: {decay_cycles} (from dividing elapsed and self.decay_interval)')
 
         if decay_cycles > 0:
             self.hp -= decay_cycles * self.decay_amount
             self.hp = max(self.hp, 0)
+            print(f"{self.name}'s HP after decay funciton: {self.hp}")
+            self.time_of_decay = dt.now()
             if self.hp == 0:
                 self.dead_plant()
         
         db.session.commit()
+        return self.time_of_decay
 
     def dead_plant(self):
         if self.hp <= 0:

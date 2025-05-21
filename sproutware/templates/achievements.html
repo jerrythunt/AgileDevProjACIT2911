@@ -1,0 +1,186 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    body {
+      margin: 0;
+      padding: 30px;
+      font-family: 'Courier New', monospace;
+      background-color: #111;
+      color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .card {
+      background-color: #1c1c1c;
+      border: 2px solid #444;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      border-color: #fff;
+    }
+
+    .emoji {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .locked {
+      opacity: 0.3;
+      filter: grayscale(100%);
+    }
+
+    
+    .inventory-btn {
+        font-family: 'Montserrat', sans-serif;
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        padding: 10px 16px;
+        font-size: 63px;
+        font-weight: bold;
+        border-radius: 8px;
+        border: none;
+        text-decoration: none;
+        background-color:transparent;
+        opacity: 0.7;
+        color: white;
+        /* box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2); */
+        transition: background-color 0.2s ease;
+        z-index: 100;
+        transition: 200ms ease;
+        opacity: 0.7;
+    }
+
+    .inventory-btn:hover {
+        /* background-color: #8d6e63; */
+        opacity: 1;
+        text-shadow: 0 0 2px #fff, 0 0 4px #0ff;
+    }
+  </style>
+    <a class="inventory-btn" href="{{ url_for('inventory') }}">📦</a>
+  
+  <h1>Achievements</h1>
+
+  <div class="grid">
+
+  <!-- 🎮 Game Started -->
+  <div class="card {% if not achievements.game_started %}locked{% endif %}">
+    <div class="emoji">🎮</div>
+    <strong>Game Started</strong><br>
+    {% if achievements.game_started %}
+      Welcome to Sproutware!
+    {% else %}
+      ????
+    {% endif %}
+  </div>
+
+  <!-- 🌻 Planted Sunflower -->
+  <div class="card {% if not achievements.planted_sunflower %}locked{% endif %}">
+    <div class="emoji">🌻</div>
+    <strong>First Step</strong><br>
+    {% if achievements.planted_sunflower %}
+      Planted your first Sunflower!
+    {% else %}
+      ????
+    {% endif %}
+  </div>
+
+  <!-- 🌼 Planted Daisy -->
+  <div class="card {% if not achievements.planted_daisy %}locked{% endif %}">
+    <div class="emoji">🌼</div>
+    <strong>First Step</strong><br>
+    {% if achievements.planted_daisy %}
+      Planted your first Daisy!
+    {% else %}
+      ????
+    {% endif %}
+  </div>
+
+  <!-- 🌵 Planted Cactus -->
+  <div class="card {% if not achievements.planted_cactus %}locked{% endif %}">
+    <div class="emoji">🌵</div>
+    <strong>First Step</strong><br>
+    {% if achievements.planted_cactus %}
+      Planted your first Cactus!
+    {% else %}
+      ????
+    {% endif %}
+  </div>
+
+  <!-- 💧 First Watering -->
+  <div class="card {% if not achievements.first_water %}locked{% endif %}">
+    <div class="emoji">💧</div>
+    <strong>Hydrated</strong><br>
+    {% if achievements.first_water %}
+      You watered a plant for the first time.
+    {% else %}
+      ????
+    {% endif %}
+  </div>
+
+  <!-- ⚡ Level Up -->
+  <div class="card {% if not achievements.level_up %}locked{% endif %}">
+    <div class="emoji">⚡</div>
+    <strong>Level Up!</strong><br>
+    {% if achievements.level_up %}
+      Reached 100 XP on a plant!
+    {% else %}
+      ????
+    {% endif %}
+  </div>
+
+  <!-- 🪦 First Death -->
+  <div class="card {% if not achievements.first_death %}locked{% endif %}">
+    <div class="emoji">🪦</div>
+    <strong>Gone Too Soon</strong><br>
+    {% if achievements.first_death %}
+      You lost your first plant... RIP
+    {% else %}
+      ????
+    {% endif %}
+  </div>
+
+  <!-- 🏆 Fully Bloomed -->
+  <div class="card {% if not achievements.fully_bloomed %}locked{% endif %}">
+    <div class="emoji">🏆</div>
+    <strong>Fully Bloomed</strong><br>
+    {% if achievements.fully_bloomed %}
+      Matured all 3 plant types!
+    {% else %}
+      ????
+    {% endif %}
+  </div>
+
+  <!-- 🥇 Overachiever -->
+  <div class="card {% if not achievements.overachiever %}locked{% endif %}">
+    <div class="emoji">🥇</div>
+    <strong>Overachiever</strong><br>
+    {% if achievements.overachiever %}
+      Unlocked every achievement!
+    {% else %}
+      ????
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}
+
