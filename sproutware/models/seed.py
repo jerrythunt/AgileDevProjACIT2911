@@ -17,14 +17,10 @@ class Seed(db.Model):
     water_retention = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=5)) # change this for different plants
     is_selected = db.mapped_column(db.Boolean, nullable=False, default=False)
     decay_amount = db.mapped_column(db.Integer, nullable = False, default = 10) # change this for different plants
-<<<<<<< HEAD
-    decay_interval = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=10)) # change this for different plants
-=======
     decay_interval = db.mapped_column(db.Interval, nullable=False, default=timedelta(seconds=15)) # change this for different plants
     produced_seeds = db.mapped_column(db.Boolean, nullable = False, default = False)
     time_of_maturity = db.mapped_column(db.DateTime, nullable = True, default = None)
     time_of_decay = db.mapped_column(db.DateTime, nullable = True, default = None)
->>>>>>> devmain
 
     # Declare methods that we can call to update attributes
     # def function(self):
