@@ -126,18 +126,28 @@ def inventory():
 
 @app.route("/achievements")
 def achievements():
-    seeds = list(db.session.execute(db.select(Seed)).scalars())  # wrap in list
+    seeds = list(db.session.execute(db.select(Seed)).scalars())
 
-    achievements = {
+    unlocked = {
         "game_started": len(seeds) > 0,
         "planted_sunflower": any(s.name.lower() == "sunflower" and s.is_planted for s in seeds),
         "planted_daisy": any(s.name.lower() == "daisy" and s.is_planted for s in seeds),
         "planted_cactus": any(s.name.lower() == "cactus" and s.is_planted for s in seeds),
         "first_water": any(s.is_watered for s in seeds),
-        "all_death": any(s.hp <= 0 for s in seeds),
+        "first_death": any(s.is_dead if hasattr(s, "is_dead") else s.hp <= 0 for s in seeds),
+
+        # New:
+        "level_up": any(s.xp >= 100 for s in seeds),  # ⚡ Level Up!
+        "fully_bloomed": all(
+            any(s.name.lower() == name and s.produced_seeds for s in seeds)
+            for name in ["sunflower", "daisy", "cactus"]
+        ),  # 🏆 Fully Bloomed
     }
 
-    return render_template("achievements.html", achievements=achievements)
+    # 🥇 Overachiever: all of the above must be True
+    unlocked["overachiever"] = all(unlocked.values())
+
+    return render_template("achievements.html", achievements=unlocked)
 
 
 @app.route("/select/<int:seed_id>", methods=["POST"])
