@@ -52,22 +52,28 @@
   filter: drop-shadow(0 0 2px white);
 }
 
+h1{
+  position: absolute;
+  font-family: 'Courier New', monospace;
+  top: 180px;
+  left: 660px;
+  font-size: 35px;
+  color: white;
+}
+
 
 </style>
 
-<div class="logo-container">
-  <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Sproutware Logo">
-</div>
+<h1>Are you sure you want to restart? You will lose all your progress!</h1>
 <div class="menu-buttons">
-<form action="/new" method="post">
-        <button class="menu-btn">🌱 New Game</button>
-    </form>
-    {% if results != None %}
-        <form action="/continue" method="get">
-          <button class="menu-btn">🌼 Continue Game</button>
-    {% endif %}
-    </form>
+  <form action="{{ url_for('home') }}">
+    <button type="submit">🌱 Back to home</button>
+  </form>
+    <form action="{{ url_for('restart_game') }}" method="post">
+    <button type="submit">⚠️ Restart my file</button>
+  </form>
+
 </div>
+
 
 {% endblock %}
-
