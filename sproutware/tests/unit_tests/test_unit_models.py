@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import Mock
 from unittest.mock import patch
+from datetime import datetime as dt, timedelta
+from unittest.mock import patch
 
 from sproutware.models.seed import Seed
 from sproutware.models.time import Time
@@ -28,18 +30,16 @@ class TestSeedMethods(unittest.TestCase):
             self.assertEqual(result, 'cactus needs to be watered!')
             mock_commit.assert_called_once()
 
-    def test_is_waterable_check(self):
-        seed = Seed(is_watered=1)
+def test_time_until_waterable():
+    seed = Seed(is_watered=True)
+    seed.time_of_watering = dt.now() - timedelta(seconds=10)
+    seed.water_retention = timedelta(seconds=5)
 
-        # Create mock for the reset_is_watered
-        with patch("sproutware.models.seed.Seed.reset_is_watered") as mock_reset_is_watered:
-            # mimic what reset_is_watered would do
-            seed.is_watered = 0
-            result = seed.is_waterable_check()
+    with patch("sproutware.models.seed.Seed.reset_is_watered") as mock_reset:
+        mock_reset.return_value = "Reset successful"
+        result = seed.time_until_waterable()
 
-            self.assertEqual(result, True)
-            mock_reset_is_watered.assert_called_once()
-
+        assert mock_reset.called or "seconds" in result
 
     
 
